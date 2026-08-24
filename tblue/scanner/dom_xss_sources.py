@@ -32,7 +32,7 @@ CWE-83: Improper Neutralization of Script in Attributes
 """
 
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from urllib.parse import urljoin, urlparse
 
 from tblue.scanner.base import BaseScanner

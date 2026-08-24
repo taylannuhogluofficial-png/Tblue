@@ -1,6 +1,6 @@
 """OAuth implicit flow — fragment token exposure, token leakage via Referrer, missing state param."""
 import re
-from urllib.parse import urlparse, parse_qs, urlencode
+from urllib.parse import urlparse
 from .base import BaseScanner
 
 _OAUTH_ENDPOINTS = [
@@ -37,8 +37,8 @@ def _check_implicit_in_discovery(http, origin: str) -> list:
                     "type": "oauth_implicit_flow_advertised",
                     "status": "WARN" if has_pkce else "FAIL",
                     "url": origin + path,
-                    "detail": (f"OAuth discovery document advertises 'implicit' grant type — "
-                               f"implicit flow returns access tokens in URL fragment, prone to leakage via Referer/history"
+                    "detail": ("OAuth discovery document advertises 'implicit' grant type — "
+                               "implicit flow returns access tokens in URL fragment, prone to leakage via Referer/history"
                                + ("; PKCE support detected, prefer authorization_code+PKCE" if has_pkce else "")),
                 })
                 return findings

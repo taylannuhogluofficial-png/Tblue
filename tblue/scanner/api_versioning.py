@@ -24,7 +24,7 @@ OWASP API Security Top 10: API9:2023 Improper Inventory Management
 
 import re
 from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 

@@ -23,10 +23,8 @@ CWE-331: Insufficient Entropy
 """
 
 import re
-import base64
 import math
-from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse
+from typing import Any, Dict, List
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_fail, log_warn
@@ -139,7 +137,6 @@ class CSPNonceAnalyzer(BaseScanner):
             return self.results
 
         # Fetch multiple times to collect nonces
-        first_body = resp0.text or ""
         all_nonces: List[str] = []
         per_request_nonces: List[List[str]] = []
 
@@ -158,7 +155,7 @@ class CSPNonceAnalyzer(BaseScanner):
             all_nonces.extend(nonces)
 
         if not all_nonces:
-            log_pass(logger, f"CSP Nonce — nonce directive present but no nonces found in responses")
+            log_pass(logger, "CSP Nonce — nonce directive present but no nonces found in responses")
             self.results.append(self._result(
                 url, "CSP Nonce — nonce directive in CSP but no nonces emitted", "WARN",
                 detail="The CSP header references nonces ('nonce-...') but no nonce values "
@@ -183,7 +180,7 @@ class CSPNonceAnalyzer(BaseScanner):
                     log_fail(logger, f"CSP Nonce — same nonce reused across requests: {list(shared)[:2]}")
                     self.results.append(self._result(
                         url,
-                        f"CSP Nonce — nonce reused across requests (static/predictable)",
+                        "CSP Nonce — nonce reused across requests (static/predictable)",
                         "FAIL",
                         detail=(
                             f"The same CSP nonce value appeared in {len(per_request_nonces)} "
@@ -250,7 +247,7 @@ class CSPNonceAnalyzer(BaseScanner):
 
         if not self.results:
             nonce_sample = unique_nonces[0] if unique_nonces else "N/A"
-            log_pass(logger, f"CSP Nonce — good: unique across requests, adequate length")
+            log_pass(logger, "CSP Nonce — good: unique across requests, adequate length")
             self.results.append(self._result(
                 url,
                 f"CSP Nonce — cryptographically adequate (unique, length ≥{_MIN_NONCE_LENGTH})",

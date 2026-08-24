@@ -16,9 +16,8 @@ never attempts actual exploitation or data exfiltration.
 CWE-93: Improper Neutralization of CRLF Sequences in HTTP Headers
 """
 
-import re
 from typing import Any, Dict, List
-from urllib.parse import urlencode, urlparse, parse_qs, urljoin, quote
+from urllib.parse import urlencode, urlparse, parse_qs, quote
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_fail, log_warn

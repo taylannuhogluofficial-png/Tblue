@@ -115,7 +115,7 @@ class SSESecurityScanner(BaseScanner):
                 log_fail(logger, f"SSE Security — SSE endpoint over plaintext HTTP: {sse_url}")
                 self.results.append(self._result(
                     page_url,
-                    f"SSE Security — EventSource endpoint over HTTP (unencrypted stream)",
+                    "SSE Security — EventSource endpoint over HTTP (unencrypted stream)",
                     "FAIL",
                     detail=(
                         f"Server-Sent Events endpoint is accessible over HTTP:\n  {sse_url}\n\n"
@@ -131,7 +131,7 @@ class SSESecurityScanner(BaseScanner):
             log_warn(logger, f"SSE Security — SSE endpoint accessible without authentication: {sse_url}")
             self.results.append(self._result(
                 page_url,
-                f"SSE Security — EventSource endpoint accessible without authentication",
+                "SSE Security — EventSource endpoint accessible without authentication",
                 "WARN",
                 detail=(
                     f"The SSE endpoint at {sse_url} returned HTTP {status} without "

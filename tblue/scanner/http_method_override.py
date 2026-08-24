@@ -1,6 +1,5 @@
 """HTTP method override — X-HTTP-Method-Override abuse, CSRF via GET-to-POST override, tunneled DELETE."""
 import re
-from urllib.parse import urlparse
 from .base import BaseScanner
 
 _OVERRIDE_HEADERS = [

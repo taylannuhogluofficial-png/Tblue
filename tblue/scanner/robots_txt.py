@@ -11,7 +11,7 @@ Checks robots.txt for:
 
 import re
 from typing import List, Dict, Any, Set
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_warn, log_fail

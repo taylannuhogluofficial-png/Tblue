@@ -1,5 +1,4 @@
 """Rate limiting detection — missing rate-limit headers, no 429 on rapid requests, Retry-After absent."""
-import re
 from urllib.parse import urlparse
 from .base import BaseScanner
 

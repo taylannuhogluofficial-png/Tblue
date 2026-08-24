@@ -28,7 +28,6 @@ CWE-538: File and Directory Information Exposure
 import json
 import re
 from typing import Any, Dict, List, Optional
-from urllib.parse import urljoin
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_fail, log_warn

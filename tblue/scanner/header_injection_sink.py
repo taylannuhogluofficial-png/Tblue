@@ -27,9 +27,8 @@ CWE-113: Improper Neutralization of CRLF Sequences in HTTP Headers
 CWE-644: Improper Neutralization of HTTP Headers for Scripting Syntax
 """
 
-import re
 from typing import Any, Dict, List, Optional
-from urllib.parse import quote, urljoin, urlparse, parse_qs, urlunparse
+from urllib.parse import urlparse, urlunparse
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_fail, log_warn

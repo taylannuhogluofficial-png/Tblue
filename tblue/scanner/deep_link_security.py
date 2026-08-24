@@ -34,11 +34,11 @@ CWE-20: Improper Input Validation
 
 import json
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from urllib.parse import urlparse, urljoin
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_warn, log_fail
+from tblue.logger import get_logger, log_pass, log_warn
 
 logger = get_logger(__name__)
 

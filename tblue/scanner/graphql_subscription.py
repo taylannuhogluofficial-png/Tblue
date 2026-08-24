@@ -34,7 +34,7 @@ CWE-1385: Missing Origin Validation in WebSockets
 import json
 import re
 from typing import Any, Dict, List, Optional
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_fail, log_warn

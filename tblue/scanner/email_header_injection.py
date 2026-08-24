@@ -26,7 +26,7 @@ CWE-20: Improper Input Validation
 
 import re
 from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_warn

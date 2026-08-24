@@ -1,5 +1,4 @@
 """Path normalization security — URL encoding bypass, semicolon path params, double encoding."""
-import re
 from urllib.parse import urlparse
 from .base import BaseScanner
 

@@ -25,9 +25,7 @@ CWE-922: Insecure Storage of Sensitive Information
 """
 
 import re
-import json
 from typing import Any, Dict, List
-from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
 from tblue.browser.engine import playwright_available, BrowserSession
@@ -177,7 +175,7 @@ class BrowserStorageScanner(BaseScanner):
             log_warn(logger, f"Browser storage: PII in localStorage on {url}: {pii_desc}")
             self.results.append(self._result(
                 url,
-                f"Browser storage — PII detected in localStorage",
+                "Browser storage — PII detected in localStorage",
                 "WARN",
                 detail=(
                     f"Personally Identifiable Information detected in localStorage: {pii_desc}\n\n"

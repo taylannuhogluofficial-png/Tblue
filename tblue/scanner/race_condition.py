@@ -35,7 +35,7 @@ OWASP API Security: API4:2023 Unrestricted Resource Consumption
 """
 
 import re
-from typing import Any, Dict, List, Set, Tuple
+from typing import Any, Dict, List, Set
 from urllib.parse import urlparse, urljoin
 
 from bs4 import BeautifulSoup

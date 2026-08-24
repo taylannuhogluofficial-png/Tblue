@@ -25,7 +25,7 @@ CWE-829: Inclusion of Functionality from Untrusted Control Sphere
 """
 
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from urllib.parse import urljoin, urlparse
 
 from tblue.scanner.base import BaseScanner

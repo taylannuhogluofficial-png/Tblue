@@ -22,7 +22,7 @@ OWASP A03:2021 — Injection
 """
 
 import re
-from typing import List, Dict, Any, Tuple, Optional
+from typing import List, Dict, Any, Tuple
 from urllib.parse import urljoin, urlparse
 
 from bs4 import BeautifulSoup

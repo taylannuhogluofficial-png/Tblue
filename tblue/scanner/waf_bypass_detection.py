@@ -30,10 +30,9 @@ CWE-693: Protection Mechanism Failure
 
 import re
 from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse, urljoin
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_warn, log_fail
+from tblue.logger import get_logger, log_pass, log_warn
 
 logger = get_logger(__name__)
 
@@ -102,7 +101,7 @@ def _check_origin_ip_disclosure(headers: dict, url: str) -> Optional[Dict]:
     for h in ("x-origin-ip", "x-real-ip", "x-backend-server"):
         if h in lower_h:
             return {
-                "type": f"waf-origin-ip-disclosed-in-header",
+                "type": "waf-origin-ip-disclosed-in-header",
                 "status": "WARN",
                 "detail": (
                     f"Origin server IP/host disclosed in header {h!r} at {url}: "
@@ -175,7 +174,7 @@ class WAFBypassDetectionScanner(BaseScanner):
             log_pass(logger, f"WAF Bypass Detection — WAF ({waf_vendor}) appears properly configured for {url}")
             self.results.append(self._result(
                 url,
-                f"WAF Bypass Detection — WAF present and no bypass indicators detected",
+                "WAF Bypass Detection — WAF present and no bypass indicators detected",
                 "PASS",
                 detail=f"WAF detected ({waf_vendor}). No detect-only mode or origin IP disclosure found.",
             ))

@@ -21,7 +21,7 @@ Paid equivalents: Burp Suite DOM Invader, PortSwigger Prototype Pollution labs.
 """
 
 import re
-from typing import Any, Dict, List, Set
+from typing import Any, Dict, List
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup

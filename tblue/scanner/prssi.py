@@ -41,8 +41,8 @@ References:
 """
 
 import re
-from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urlparse, urljoin
+from typing import Any, Dict, List, Optional
+from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 

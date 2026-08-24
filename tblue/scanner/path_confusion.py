@@ -36,8 +36,8 @@ CWE-436: Interpretation Conflict
 """
 
 import re
-from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urlparse, urljoin, quote
+from typing import Any, Dict, List, Tuple
+from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 
@@ -166,7 +166,6 @@ class PathConfusionScanner(BaseScanner):
         body = resp.text or ""
         parsed = urlparse(url)
         base = f"{parsed.scheme}://{parsed.netloc}"
-        path = parsed.path
 
         found_any = False
 

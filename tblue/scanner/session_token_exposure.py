@@ -1,6 +1,6 @@
 """Session token exposure — tokens in URLs, Referrer, logs, error messages, API responses."""
 import re
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse
 from .base import BaseScanner
 
 _SESSION_PARAM_RE = re.compile(

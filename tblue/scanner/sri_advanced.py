@@ -9,9 +9,7 @@ Goes beyond the supply_chain.py SRI presence check:
 """
 
 import re
-import hashlib
-import base64
-from typing import List, Dict, Any, Tuple, Set
+from typing import List, Dict, Any
 from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner

@@ -19,11 +19,11 @@ CWE-235: Improper Handling of Extra Parameters
 """
 
 import re
-from typing import Any, Dict, List, Optional
-from urllib.parse import urlencode, urlparse, parse_qs, urljoin, quote
+from typing import Any, Dict, List
+from urllib.parse import urlparse, parse_qs
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_fail, log_warn
+from tblue.logger import get_logger, log_pass, log_warn
 
 logger = get_logger(__name__)
 

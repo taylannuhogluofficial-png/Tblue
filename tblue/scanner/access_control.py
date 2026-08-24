@@ -6,7 +6,7 @@ and verifies sensitive admin areas require authentication.
 """
 
 import re
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from urllib.parse import urlparse, urljoin
 from bs4 import BeautifulSoup
 

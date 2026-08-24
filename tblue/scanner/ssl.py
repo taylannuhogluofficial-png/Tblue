@@ -61,13 +61,13 @@ class SSLScanner(BaseScanner):
         if not resp:
             return
         if resp.url.startswith("https://"):
-            log_pass(logger, f"HTTP → HTTPS redirect confirmed")
+            log_pass(logger, "HTTP → HTTPS redirect confirmed")
             self.results.append(self._result(
                 http_url, "HTTP → HTTPS redirect", "PASS",
                 detail="HTTP traffic is automatically redirected to HTTPS."
             ))
         else:
-            log_fail(logger, f"HTTP does not redirect to HTTPS")
+            log_fail(logger, "HTTP does not redirect to HTTPS")
             self.results.append(self._result(
                 http_url, "HTTP → HTTPS redirect", "FAIL",
                 detail="HTTP version does not redirect to HTTPS. Fix: add a server-level redirect."

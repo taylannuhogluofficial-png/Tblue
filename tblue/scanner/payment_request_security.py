@@ -1,6 +1,5 @@
 """Payment Request API security — HTTP usage, sensitive card data in JS, missing 3DS/SCA handling."""
 import re
-from urllib.parse import urlparse
 from .base import BaseScanner
 
 _PAYMENT_REQUEST_RE = re.compile(r'new\s+PaymentRequest\s*\(', re.I)

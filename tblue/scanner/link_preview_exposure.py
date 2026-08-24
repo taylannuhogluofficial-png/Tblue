@@ -35,7 +35,7 @@ CWE-918: Server-Side Request Forgery (SSRF)
 
 import re
 from typing import Any, Dict, List, Optional
-from urllib.parse import urljoin, urlparse, urlencode
+from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_fail, log_warn
@@ -193,7 +193,7 @@ class LinkPreviewExposureScanner(BaseScanner):
             log_pass(logger, f"Link Preview Exposure — no preview/fetch endpoints on {url}")
             self.results.append(self._result(
                 url,
-                f"Link Preview Exposure — no URL fetch endpoints detected",
+                "Link Preview Exposure — no URL fetch endpoints detected",
                 "PASS",
                 detail=(
                     f"Probed {len(_PREVIEW_PATHS)} common preview and oEmbed paths. "

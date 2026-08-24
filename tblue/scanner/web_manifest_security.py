@@ -221,7 +221,7 @@ class WebManifestSecurityScanner(BaseScanner):
             log_pass(logger, f"Web Manifest Security — manifest correctly configured: {manifest_url}")
             self.results.append(self._result(
                 url,
-                f"Web Manifest Security — PWA manifest correctly configured",
+                "Web Manifest Security — PWA manifest correctly configured",
                 "PASS",
                 detail=(
                     f"Manifest at {manifest_url} passed all security checks:\n"

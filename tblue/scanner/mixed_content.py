@@ -5,10 +5,10 @@ that exposes users to man-in-the-middle attacks.
 Read-only — parses page source only.
 """
 
-from typing import List, Dict, Any, Set
+from typing import List, Dict, Any
 from bs4 import BeautifulSoup
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_fail, log_warn
+from tblue.logger import get_logger, log_pass, log_fail
 
 logger = get_logger(__name__)
 

@@ -19,7 +19,7 @@ Paid equivalents: Burp Suite Pro active scanner, Acunetix XXE scan.
 
 import re
 from typing import Any, Dict, List
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 

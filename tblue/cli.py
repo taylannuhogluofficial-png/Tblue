@@ -8,11 +8,10 @@ import argparse
 import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
-from typing import List, Dict, Any
+from typing import List, Dict
 
 from tblue import __version__
 from tblue.constants import DEFAULT_DEPTH, DEFAULT_USER_AGENT, DEFAULT_TIMEOUT, DEFAULT_RETRIES
-from tblue.crawler import crawl
 from tblue.config import load as load_config, apply as apply_config
 from tblue.scanner.xss             import XSSScanner
 from tblue.scanner.headers         import HeaderScanner
@@ -259,15 +258,9 @@ from tblue.scanner.xml_security_passive import XMLSecurityPassiveScanner
 from tblue.scanner.email_config_exposure import EmailConfigExposureScanner
 from tblue.scanner.graphql_info_disclosure import GraphQLInfoDisclosureScanner
 from tblue.scanner.path_normalization_security import PathNormalizationSecurityScanner
-from tblue.scanner.tls_certificate_deep import TLSCertificateDeepScanner
 from tblue.scanner.server_timing_disclosure import ServerTimingDisclosureScanner
-from tblue.scanner.dependency_confusion import DependencyConfusionScanner
 from tblue.scanner.iframe_security_deep import IframeSecurityDeepScanner
-from tblue.scanner.http_method_override import HTTPMethodOverrideScanner
-from tblue.scanner.content_type_confusion import ContentTypeConfusionScanner
-from tblue.scanner.cache_poisoning_passive import CachePoisoningPassiveScanner
 from tblue.scanner.secret_in_error_page import SecretInErrorPageScanner
-from tblue.scanner.open_redirect_deep import OpenRedirectDeepScanner
 from tblue.scanner.insecure_deserialization_passive import InsecureDeserializationPassiveScanner
 from tblue.scanner.xxe_passive import XXEPassiveScanner
 from tblue.scanner.ssrf_passive import SSRFPassiveScanner
@@ -286,7 +279,6 @@ from tblue.scanner.subdomain_takeover_passive import SubdomainTakeoverPassiveSca
 from tblue.scanner.dns_rebinding_passive import DNSRebindingPassiveScanner
 from tblue.scanner.log_injection_passive import LogInjectionPassiveScanner
 from tblue.scanner.parameter_pollution import ParameterPollutionScanner
-from tblue.scanner.websocket_security_deep import WebSocketSecurityDeepScanner
 from tblue.scanner.feature_policy_security import FeaturePolicySecurityScanner
 from tblue.scanner.docker_exposure     import DockerExposureScanner
 from tblue.scanner.graphql_batch_attack import GraphQLBatchAttackScanner
@@ -2127,7 +2119,6 @@ Examples:
     # ── Monitor mode ───────────────────────────────────────────────────────
     if getattr(args, "monitor", False):
         from tblue.monitor import MonitorSession, parse_interval
-        import os as _os
 
         try:
             interval_secs = parse_interval(args.interval)

@@ -23,12 +23,11 @@ Read-only. Probes are benign strings that won't persist server-side.
 CWE-113: Improper Neutralization of CRLF Sequences in HTTP Headers
 """
 
-import re
-from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urlparse, quote
+from typing import Any, Dict, List, Optional
+from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_warn, log_fail
+from tblue.logger import get_logger, log_pass, log_fail
 
 logger = get_logger(__name__)
 

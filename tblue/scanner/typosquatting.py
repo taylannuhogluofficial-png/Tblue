@@ -9,8 +9,6 @@ All checks are DNS-only (no HTTP requests to suspicious domains).
 No external API required.
 """
 
-import re
-import itertools
 from typing import List, Dict, Any, Set
 from urllib.parse import urlparse
 

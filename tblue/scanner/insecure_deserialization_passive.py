@@ -1,7 +1,5 @@
 """Insecure deserialization passive — Java serialized bytes, PHP object injection, Python pickle, XML-encoded objects."""
 import re
-import base64
-from urllib.parse import urlparse
 from .base import BaseScanner
 
 # Java serialized object magic bytes in base64: rO0AB (aced0005)

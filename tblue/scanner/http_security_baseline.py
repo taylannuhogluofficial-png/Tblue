@@ -27,7 +27,6 @@ CWE-16: Configuration
 
 import re
 from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_warn, log_fail
@@ -58,9 +57,9 @@ def _check_https(url: str, resp) -> Optional[Dict]:
             "type": "baseline-no-https",
             "status": "FAIL",
             "detail": (
-                f"URL is served over plain HTTP. All traffic must use HTTPS.\n\n"
-                f"Without TLS, credentials, session tokens, and sensitive data are "
-                f"transmitted in cleartext and susceptible to interception and MITM attacks."
+                "URL is served over plain HTTP. All traffic must use HTTPS.\n\n"
+                "Without TLS, credentials, session tokens, and sensitive data are "
+                "transmitted in cleartext and susceptible to interception and MITM attacks."
             ),
         }
     hsts = _hdr(resp.headers, "strict-transport-security")
@@ -69,10 +68,10 @@ def _check_https(url: str, resp) -> Optional[Dict]:
             "type": "baseline-hsts-absent",
             "status": "WARN",
             "detail": (
-                f"HTTPS is in use but Strict-Transport-Security is absent.\n\n"
-                f"Without HSTS, users who navigate to the HTTP version are not "
-                f"automatically upgraded. Recommend: 'Strict-Transport-Security: "
-                f"max-age=31536000; includeSubDomains'."
+                "HTTPS is in use but Strict-Transport-Security is absent.\n\n"
+                "Without HSTS, users who navigate to the HTTP version are not "
+                "automatically upgraded. Recommend: 'Strict-Transport-Security: "
+                "max-age=31536000; includeSubDomains'."
             ),
         }
     return None
@@ -97,10 +96,10 @@ def _check_csp(headers) -> Optional[Dict]:
             "type": "baseline-csp-unsafe-inline",
             "status": "WARN",
             "detail": (
-                f"CSP contains 'unsafe-inline' without a nonce or hash. This "
-                f"neutralises XSS protection for inline scripts.\n\n"
-                f"Fix: replace 'unsafe-inline' with a per-request nonce or "
-                f"hash-based allowlist."
+                "CSP contains 'unsafe-inline' without a nonce or hash. This "
+                "neutralises XSS protection for inline scripts.\n\n"
+                "Fix: replace 'unsafe-inline' with a per-request nonce or "
+                "hash-based allowlist."
             ),
         }
     return None

@@ -33,11 +33,10 @@ CWE-200: Exposure of Sensitive Information to an Unauthorized Actor
 """
 
 import re
-from typing import Any, Dict, List, Optional
-from urllib.parse import urljoin, urlparse
+from typing import Any, Dict, List
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_fail, log_warn
+from tblue.logger import get_logger, log_pass, log_warn
 
 logger = get_logger(__name__)
 
@@ -108,7 +107,7 @@ class ETagFingerprintingScanner(BaseScanner):
                     detail="No ETag headers were returned on any probed URL. "
                            "ETags are optional and their absence is fine from a security standpoint."))
             else:
-                log_pass(logger, f"ETag Fingerprinting — no fingerprinting patterns detected")
+                log_pass(logger, "ETag Fingerprinting — no fingerprinting patterns detected")
                 sample = list(etags_seen.values())[0]
                 self.results.append(self._result(
                     url,
@@ -133,7 +132,7 @@ class ETagFingerprintingScanner(BaseScanner):
             log_warn(logger, f"ETag Fingerprinting — Apache inode-based ETag at {probe_url}: {etag_raw!r}")
             self.results.append(self._result(
                 page_url,
-                f"ETag Fingerprinting — Apache inode-based ETag leaks filesystem metadata",
+                "ETag Fingerprinting — Apache inode-based ETag leaks filesystem metadata",
                 "WARN",
                 detail=(
                     f"ETag: {etag_raw}\n\n"
@@ -155,7 +154,7 @@ class ETagFingerprintingScanner(BaseScanner):
             log_warn(logger, f"ETag Fingerprinting — sequential numeric ETag: {etag_raw!r}")
             self.results.append(self._result(
                 page_url,
-                f"ETag Fingerprinting — sequential numeric ETag reveals resource counter",
+                "ETag Fingerprinting — sequential numeric ETag reveals resource counter",
                 "WARN",
                 detail=(
                     f"ETag: {etag_raw}\n\n"

@@ -30,8 +30,7 @@ CWE-79: Cross-Site Scripting (in JSON context)
 """
 
 import re
-import json
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List
 from urllib.parse import urlparse, urljoin, urlencode, parse_qs, parse_qsl
 
 from bs4 import BeautifulSoup

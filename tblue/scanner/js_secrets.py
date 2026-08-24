@@ -10,7 +10,7 @@ All checks are read-only — no credentials are validated or used.
 
 import re
 from typing import List, Dict, Any, Tuple
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urljoin
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_fail, log_pass

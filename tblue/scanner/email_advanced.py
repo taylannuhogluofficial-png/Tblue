@@ -114,7 +114,7 @@ class EmailAdvancedScanner(BaseScanner):
                     detail=f"MTA-STS DNS record and policy file both present for {domain}. "
                            "Email delivery to your domain enforces TLS."))
             else:
-                log_warn(logger, f"MTA-STS DNS record present but policy file missing/invalid")
+                log_warn(logger, "MTA-STS DNS record present but policy file missing/invalid")
                 self.results.append(self._result(url, "Email — MTA-STS policy file missing", "WARN",
                     detail=f"_mta-sts.{domain} DNS record exists but policy file at {policy_url} "
                            "is missing or invalid. MTA-STS won't be enforced without the policy file."))
@@ -148,7 +148,7 @@ class EmailAdvancedScanner(BaseScanner):
         if has_bimi:
             log_pass(logger, f"BIMI configured for {domain}")
             self.results.append(self._result(url, "Email — BIMI configured", "PASS",
-                detail=f"BIMI record found. Your brand logo will appear in Gmail and Apple Mail "
+                detail="BIMI record found. Your brand logo will appear in Gmail and Apple Mail "
                        "inboxes, improving trust and email open rates."))
         else:
             self.results.append(self._result(url, "Email — BIMI not configured", "WARN",
@@ -195,12 +195,12 @@ class EmailAdvancedScanner(BaseScanner):
             if qualifier == "-":
                 log_pass(logger, f"SPF uses strict -all for {domain}")
                 self.results.append(self._result(url, "Email — SPF strict (-all)", "PASS",
-                    detail=f"SPF record ends with -all (hard fail). Unauthorised senders are rejected."))
+                    detail="SPF record ends with -all (hard fail). Unauthorised senders are rejected."))
             elif qualifier == "~":
                 log_warn(logger, f"SPF uses softfail ~all for {domain}")
                 self.results.append(self._result(url, "Email — SPF softfail (~all)", "WARN",
                     detail=(
-                        f"SPF record uses ~all (softfail). Unauthorised senders are marked as spam "
+                        "SPF record uses ~all (softfail). Unauthorised senders are marked as spam "
                         "but not rejected. Combine with DMARC p=reject for full enforcement. "
                         "Once confident in your sending sources, upgrade to -all."
                     )))
@@ -214,7 +214,7 @@ class EmailAdvancedScanner(BaseScanner):
                     )))
             elif qualifier == "?":
                 self.results.append(self._result(url, "Email — SPF neutral (?all)", "WARN",
-                    detail=f"SPF record uses ?all (neutral) — no enforcement. Use -all."))
+                    detail="SPF record uses ?all (neutral) — no enforcement. Use -all."))
 
         # Lookup count
         try:

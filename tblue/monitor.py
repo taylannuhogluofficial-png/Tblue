@@ -27,10 +27,9 @@ Daemon mode:
 """
 
 import time
-import sys
 import signal
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Callable
+from typing import Dict, List, Optional, Callable
 
 from tblue.logger import get_logger, log_head
 

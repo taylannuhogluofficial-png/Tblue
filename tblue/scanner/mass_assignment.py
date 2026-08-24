@@ -22,7 +22,6 @@ CWE-915: Improperly Controlled Modification of Dynamically-Determined Object Att
 """
 
 import re
-import json
 from typing import Any, Dict, List
 from urllib.parse import urlparse
 

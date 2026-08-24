@@ -11,7 +11,7 @@ from typing import List, Dict, Any
 from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_warn, log_fail
+from tblue.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -44,7 +44,6 @@ class MongoDBExposureScanner(BaseScanner):
     def scan(self, url: str) -> List[Dict[str, Any]]:
         parsed  = urlparse(url)
         host    = parsed.hostname or parsed.netloc.split(":")[0]
-        base    = parsed.scheme + "://" + parsed.netloc
         found   = False
 
         # CouchDB HTTP API

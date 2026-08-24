@@ -26,8 +26,7 @@ Strictly blue-team:
 CWE-79: Improper Neutralization of Input During Web Page Generation
 """
 
-import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from urllib.parse import urlparse, parse_qs, urlencode
 
 from tblue.scanner.base import BaseScanner

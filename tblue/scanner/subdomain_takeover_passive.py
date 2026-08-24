@@ -1,6 +1,5 @@
 """Subdomain takeover passive — dangling DNS CNAME, cloud service error pages, unclaimed buckets."""
 import re
-from urllib.parse import urlparse
 from .base import BaseScanner
 
 # Known cloud service error pages that indicate unclaimed subdomain

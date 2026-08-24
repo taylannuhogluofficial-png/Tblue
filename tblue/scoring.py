@@ -5,7 +5,7 @@ Classifies each finding by severity (critical / high / medium / low / info),
 computes a 0-100 site security score, and produces a prioritised fix list.
 """
 
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from typing import Dict, List, Any, Tuple
 
 # ── Severity constants ────────────────────────────────────────────────────────

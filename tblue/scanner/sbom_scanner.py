@@ -9,10 +9,10 @@ All analysis is passive — no dependency-specific HTTP requests.
 import re
 import json
 from typing import List, Dict, Any, Optional
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_warn, log_fail
+from tblue.logger import get_logger
 
 logger = get_logger(__name__)
 

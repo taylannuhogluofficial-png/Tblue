@@ -25,9 +25,7 @@ Read-only passive + one active OPTIONS preflight. No credentials sent.
 CWE-942: Permissive Cross-domain Policy with Untrusted Domains
 """
 
-import re
 from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_warn, log_fail

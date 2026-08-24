@@ -1,6 +1,5 @@
 """CORS preflight deep — wildcard with credentials, missing Vary, preflight cache abuse."""
 import re
-from urllib.parse import urlparse
 from .base import BaseScanner
 
 _PROBE_ORIGIN = "https://attacker-tbl9z7x-cors.example.com"

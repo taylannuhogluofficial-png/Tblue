@@ -1,5 +1,4 @@
 """CORS wildcard on API endpoints — stricter check than cors_advanced for API paths."""
-import re
 from urllib.parse import urlparse
 from .base import BaseScanner
 

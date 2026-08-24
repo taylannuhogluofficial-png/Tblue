@@ -90,7 +90,7 @@ def _check_xpath_error_disclosure(http, url: str) -> list:
                     "type": "ldap_error_disclosed",
                     "status": "FAIL",
                     "url": probe_url,
-                    "detail": (f"LDAP exception in response to probe — LDAP injection may be possible"),
+                    "detail": ("LDAP exception in response to probe — LDAP injection may be possible"),
                 })
                 return findings
         except Exception:

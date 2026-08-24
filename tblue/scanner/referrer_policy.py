@@ -48,7 +48,6 @@ References:
 
 import re
 from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 

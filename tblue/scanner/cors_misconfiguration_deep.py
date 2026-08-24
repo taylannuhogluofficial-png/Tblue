@@ -18,7 +18,6 @@ CWE-942: Overly Permissive Cross-domain Whitelist
 CWE-346: Origin Validation Error
 """
 
-import re
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse
 

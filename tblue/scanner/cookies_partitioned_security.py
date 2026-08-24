@@ -29,8 +29,7 @@ Reference: https://developers.google.com/privacy-sandbox/3pcd/chips
 CWE-1275: Sensitive Cookie with Improper SameSite Attribute
 """
 
-import re
-from typing import Any, Dict, List, Tuple
+from typing import Any, Dict, List
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_warn, log_fail

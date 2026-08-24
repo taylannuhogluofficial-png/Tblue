@@ -12,10 +12,10 @@ Checks for missing authorization on GraphQL mutations and queries:
 import re
 import json
 from typing import List, Dict, Any
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_warn, log_fail
+from tblue.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -56,7 +56,6 @@ class GraphQLAuthorizationScanner(BaseScanner):
                 continue
 
             found_gql = True
-            body    = resp.text or ""
             headers = resp.headers if hasattr(resp.headers, "get") else {}
 
             # Check if introspection works without auth

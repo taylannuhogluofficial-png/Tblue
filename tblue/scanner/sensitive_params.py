@@ -11,7 +11,6 @@ Credentials in URLs are dangerous because they:
   - Are visible to CDN/proxy infrastructure between client and server
 """
 
-import re
 from typing import List, Dict, Any, Set
 from urllib.parse import urlparse, parse_qs
 

@@ -8,6 +8,7 @@ equivalent to what a browser normally sends.
 """
 
 import json
+import shlex
 from datetime import datetime, timezone
 from typing import Dict, List, Any
 from urllib.parse import urlparse
@@ -75,11 +76,11 @@ _POC_TEMPLATES: List[tuple] = [
 
     # Open redirect
     ("open_redirect",
-     "curl -sI '{url}?redirect=https://evil.example.com' | grep -i location",
+     "curl -sI {url_redirect} | grep -i location",
      "Confirm redirect parameter forwards to external URL."),
 
     ("open_redirect_deep",
-     "curl -sI '{url}?next=//evil.example.com' | grep -i location",
+     "curl -sI {url_next} | grep -i location",
      "Confirm protocol-relative redirect not validated."),
 
     # Sensitive data
@@ -132,7 +133,7 @@ _POC_TEMPLATES: List[tuple] = [
 
     # SSRF params
     ("ssrf_params",
-     "curl -s '{url}?url=http://169.254.169.254/latest/meta-data/' | head -5",
+     "curl -s {url_ssrf} | head -5",
      "Probe SSRF-prone URL parameter with cloud metadata URL."),
 
     # File upload
@@ -232,7 +233,16 @@ def generate(target: str, all_results: Dict[str, List[Any]], output_path: str,
         seen.add(ftype)
 
         template, description = _find_template(ftype)
-        command = template.format(url=url, host=host)
+        # Findings carry attacker-influenceable URLs (redirects, crawled links).
+        # Shell-quote every substituted value so a copy-pasted PoC cannot inject
+        # shell metacharacters into the user's terminal.
+        command = template.format(
+            url          = shlex.quote(url),
+            host         = shlex.quote(host),
+            url_redirect = shlex.quote(f"{url}?redirect=https://evil.example.com"),
+            url_next     = shlex.quote(f"{url}?next=//evil.example.com"),
+            url_ssrf     = shlex.quote(f"{url}?url=http://169.254.169.254/latest/meta-data/"),
+        )
 
         pocs.append({
             "finding_type": ftype,
@@ -260,7 +270,7 @@ def generate(target: str, all_results: Dict[str, List[Any]], output_path: str,
         json.dump(output, f, indent=2)
 
     with open(md_path, "w", encoding="utf-8") as f:
-        f.write(f"# Tblue — Proof of Concept Commands\n\n")
+        f.write("# Tblue — Proof of Concept Commands\n\n")
         f.write(f"**Target:** {target}  \n")
         f.write(f"**Generated:** {output['generated']}  \n")
         f.write(f"**Findings with PoC:** {len(pocs)}  \n\n")

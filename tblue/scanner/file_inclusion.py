@@ -23,7 +23,7 @@ CWE-98: Improper Control of Filename for Include/Require Statement
 """
 
 import re
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Set
 from urllib.parse import urlparse, parse_qs, urlencode
 
 from bs4 import BeautifulSoup

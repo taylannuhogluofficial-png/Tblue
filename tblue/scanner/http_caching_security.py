@@ -35,7 +35,7 @@ CWE-525: Use of Web Browser Cache Containing Sensitive Information
 """
 
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from urllib.parse import urlparse, urljoin
 
 from tblue.scanner.base import BaseScanner

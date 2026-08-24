@@ -11,7 +11,6 @@
 
 **614 passive blue-team security scanners. Runs on your machine. No accounts. No data sent anywhere.**
 
-[![CI](https://github.com/taylannuhogluofficial-png/Tblue/actions/workflows/ci.yml/badge.svg)](https://github.com/taylannuhogluofficial-png/Tblue/actions/workflows/ci.yml)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue?style=flat-square)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Scanners](https://img.shields.io/badge/scanners-614-cyan?style=flat-square)](#what-it-checks)

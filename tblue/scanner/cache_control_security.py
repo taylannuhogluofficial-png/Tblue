@@ -27,8 +27,8 @@ CWE-525: Use of Web Browser Cache Containing Sensitive Information
 """
 
 import re
-from typing import Any, Dict, List, Optional, Set
-from urllib.parse import urljoin, urlparse
+from typing import Any, Dict, List, Set
+from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_fail, log_warn
@@ -201,7 +201,7 @@ class CacheControlSecurityScanner(BaseScanner):
             log_warn(logger, f"Cache-Control Security — API endpoint has s-maxage shared cache: {url}")
             self.results.append(self._result(
                 url,
-                f"Cache-Control Security — API endpoint has s-maxage (shared cache exposure)",
+                "Cache-Control Security — API endpoint has s-maxage (shared cache exposure)",
                 "WARN",
                 detail=(
                     f"Cache-Control: {cc_raw}\n\n"

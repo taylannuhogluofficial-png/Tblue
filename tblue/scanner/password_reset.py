@@ -30,8 +30,8 @@ CWE-352: Cross-Site Request Forgery (CSRF)
 """
 
 import re
-from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urlparse, urljoin, parse_qs
+from typing import Any, Dict, List, Optional
+from urllib.parse import urlparse, urljoin
 
 from bs4 import BeautifulSoup
 

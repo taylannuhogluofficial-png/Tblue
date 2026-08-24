@@ -23,8 +23,8 @@ Paid equivalents: Burp Suite Pro, PortSwigger research tooling.
 """
 
 import re
-from typing import Any, Dict, List, Tuple
-from urllib.parse import urlparse, urljoin
+from typing import Any, Dict, List
+from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 

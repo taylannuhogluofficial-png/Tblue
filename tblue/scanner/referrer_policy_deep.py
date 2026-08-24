@@ -31,7 +31,6 @@ CWE-598: Use of GET Request Method with Sensitive Query Strings
 
 import re
 from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_warn, log_fail
@@ -100,7 +99,7 @@ def _check_referrer_policy_header(headers: dict, url: str) -> List[Dict]:
         })
     elif effective not in _ACCEPTABLE_POLICIES:
         findings.append({
-            "type": f"referrer-policy-unknown-value",
+            "type": "referrer-policy-unknown-value",
             "status": "WARN",
             "detail": (
                 f"Referrer-Policy at {url} has an unrecognised value: {effective!r}.\n\n"

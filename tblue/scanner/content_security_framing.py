@@ -1,6 +1,5 @@
 """Content security framing — frame-ancestors analysis, XFO/CSP interaction, sandboxed iframes."""
 import re
-from urllib.parse import urlparse
 from .base import BaseScanner
 
 _XFO_RE = re.compile(r'x-frame-options', re.I)

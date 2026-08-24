@@ -29,10 +29,10 @@ References: https://www.w3.org/TR/CSP3/#directive-report-uri
 
 import re
 from typing import Any, Dict, List, Optional
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_fail, log_warn
+from tblue.logger import get_logger, log_pass, log_warn
 
 logger = get_logger(__name__)
 
@@ -121,11 +121,11 @@ class CSPViolationReportScanner(BaseScanner):
                 "CSP Report — Content-Security-Policy absent",
                 "WARN",
                 detail=(
-                    f"No Content-Security-Policy or Content-Security-Policy-Report-Only "
-                    f"header found.\n\n"
-                    f"Without CSP, XSS and data injection attacks have no browser-level "
-                    f"mitigation. Deploy an enforced CSP with a report-uri endpoint to "
-                    f"gain both protection and attack visibility."
+                    "No Content-Security-Policy or Content-Security-Policy-Report-Only "
+                    "header found.\n\n"
+                    "Without CSP, XSS and data injection attacks have no browser-level "
+                    "mitigation. Deploy an enforced CSP with a report-uri endpoint to "
+                    "gain both protection and attack visibility."
                 ),
             ))
             return self.results
@@ -138,12 +138,12 @@ class CSPViolationReportScanner(BaseScanner):
                 "CSP Report — policy is report-only, no enforced CSP",
                 "WARN",
                 detail=(
-                    f"Content-Security-Policy-Report-Only is set but there is no "
-                    f"enforced Content-Security-Policy.\n\n"
-                    f"Report-Only mode observes but does NOT block. Attackers can still "
-                    f"execute XSS; you only get a notification.\n\n"
-                    f"Fix: after tuning the policy via report-only, deploy the same "
-                    f"policy in the enforced CSP header."
+                    "Content-Security-Policy-Report-Only is set but there is no "
+                    "enforced Content-Security-Policy.\n\n"
+                    "Report-Only mode observes but does NOT block. Attackers can still "
+                    "execute XSS; you only get a notification.\n\n"
+                    "Fix: after tuning the policy via report-only, deploy the same "
+                    "policy in the enforced CSP header."
                 ),
             ))
 
@@ -160,12 +160,12 @@ class CSPViolationReportScanner(BaseScanner):
                 "CSP Report — no report-uri or report-to directive",
                 "WARN",
                 detail=(
-                    f"Content-Security-Policy is present but contains no 'report-uri' "
-                    f"or 'report-to' directive.\n\n"
-                    f"Without reporting, CSP violations are silently dropped. Defenders "
-                    f"have no visibility into attacks or policy violations.\n\n"
-                    f"Fix: add a 'report-uri /csp-report' (or 'report-to' group) "
-                    f"directive and ensure the endpoint accepts POST."
+                    "Content-Security-Policy is present but contains no 'report-uri' "
+                    "or 'report-to' directive.\n\n"
+                    "Without reporting, CSP violations are silently dropped. Defenders "
+                    "have no visibility into attacks or policy violations.\n\n"
+                    "Fix: add a 'report-uri /csp-report' (or 'report-to' group) "
+                    "directive and ensure the endpoint accepts POST."
                 ),
             ))
         else:
@@ -204,9 +204,9 @@ class CSPViolationReportScanner(BaseScanner):
                 "CSP Report — enforced CSP with reporting and report-only monitoring",
                 "PASS",
                 detail=(
-                    f"Best practice: enforced CSP is active, report-only mode is "
-                    f"monitoring for future policy changes, and a reporting endpoint "
-                    f"is configured."
+                    "Best practice: enforced CSP is active, report-only mode is "
+                    "monitoring for future policy changes, and a reporting endpoint "
+                    "is configured."
                 ),
             ))
         elif csp_enforced and (report_uri_val or report_to_group):
@@ -216,8 +216,8 @@ class CSPViolationReportScanner(BaseScanner):
                 "CSP Report — enforced CSP with reporting configured",
                 "PASS",
                 detail=(
-                    f"Enforced Content-Security-Policy is present and a reporting "
-                    f"directive is configured."
+                    "Enforced Content-Security-Policy is present and a reporting "
+                    "directive is configured."
                 ),
             ))
 

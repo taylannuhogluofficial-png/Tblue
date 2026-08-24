@@ -38,9 +38,9 @@ def _check_password_autocomplete(body: str, url: str) -> list:
                 "type": "autocomplete_password_exposed",
                 "status": "WARN",
                 "url": url,
-                "detail": (f"Password input field without autocomplete='new-password' or 'off' — "
-                           f"browser may auto-fill credentials into wrong forms; "
-                           f"for password change forms use autocomplete='new-password'"),
+                "detail": ("Password input field without autocomplete='new-password' or 'off' — "
+                           "browser may auto-fill credentials into wrong forms; "
+                           "for password change forms use autocomplete='new-password'"),
             })
             return findings
     return findings

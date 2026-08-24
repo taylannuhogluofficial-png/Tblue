@@ -1,6 +1,6 @@
 """HTTP parameter pollution — duplicate parameters accepted, last/first-wins discrepancy, array injection."""
 import re
-from urllib.parse import urlparse, parse_qs, urlencode
+from urllib.parse import urlparse, parse_qs
 from .base import BaseScanner
 
 _PARAM_POLLUTION_PROBE_A = "tbl9z7x-appa"

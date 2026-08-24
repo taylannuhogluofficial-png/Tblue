@@ -39,7 +39,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_warn, log_fail
+from tblue.logger import get_logger, log_pass, log_warn
 
 logger = get_logger(__name__)
 
@@ -85,7 +85,6 @@ def _get_dns_ttl(hostname: str) -> Optional[int]:
         pass
     # Fallback: raw DNS query
     try:
-        from tblue.scanner.dns_caa import _raw_caa_query
         # We can't easily extract TTL from raw bytes here; return None
         pass
     except Exception:
@@ -112,7 +111,7 @@ class DNSRebindingScanner(BaseScanner):
         found    = False
 
         # Check 1: Does the server accept arbitrary Host headers?
-        evil_host = f"evil-rebind-tbl9z7x.com"
+        evil_host = "evil-rebind-tbl9z7x.com"
         try:
             r = self.http.get(url, headers={"Host": evil_host})
             if r and r.status_code == 200:
@@ -182,11 +181,11 @@ class DNSRebindingScanner(BaseScanner):
                 "DNS Rebinding — HTTP-only server lacks TLS protection",
                 "WARN",
                 detail=(
-                    f"The server is reachable over plain HTTP. Without HTTPS and HSTS, "
-                    f"DNS rebinding attacks are easier to execute because the browser "
-                    f"has no certificate to validate against the expected hostname.\n\n"
-                    f"Fix: deploy HTTPS with a valid certificate and set "
-                    f"Strict-Transport-Security: max-age=31536000."
+                    "The server is reachable over plain HTTP. Without HTTPS and HSTS, "
+                    "DNS rebinding attacks are easier to execute because the browser "
+                    "has no certificate to validate against the expected hostname.\n\n"
+                    "Fix: deploy HTTPS with a valid certificate and set "
+                    "Strict-Transport-Security: max-age=31536000."
                 ),
             ))
 
@@ -197,8 +196,8 @@ class DNSRebindingScanner(BaseScanner):
                 "DNS Rebinding — no significant rebinding risk factors detected",
                 "PASS",
                 detail=(
-                    f"Host header validation appears active, no private IPs in DNS, "
-                    f"and HTTPS is in use."
+                    "Host header validation appears active, no private IPs in DNS, "
+                    "and HTTPS is in use."
                 ),
             ))
 

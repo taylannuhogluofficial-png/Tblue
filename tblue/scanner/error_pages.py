@@ -11,7 +11,7 @@ the server reveals in 404 / 500 responses:
 """
 
 import re
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from urllib.parse import urlparse, urljoin
 
 from tblue.scanner.base import BaseScanner

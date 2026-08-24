@@ -1,6 +1,6 @@
 """OAuth redirect_uri validation — open redirect in OAuth flow, weak pattern matching, state param missing."""
 import re
-from urllib.parse import urlparse, parse_qs, urlencode
+from urllib.parse import urlparse
 from .base import BaseScanner
 
 _OAUTH_PATHS = [

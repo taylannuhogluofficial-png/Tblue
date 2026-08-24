@@ -13,7 +13,6 @@ Detection methods (in order of reliability):
 
 import re
 from typing import List, Dict, Any, Optional, Tuple
-from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_warn, log_fail

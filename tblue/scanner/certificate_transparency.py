@@ -35,7 +35,7 @@ from typing import Any, Dict, List, Optional, Set
 from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_warn, log_fail
+from tblue.logger import get_logger, log_pass, log_warn
 
 logger = get_logger(__name__)
 
@@ -68,7 +68,6 @@ def _analyze_certs(certs: list, domain: str) -> List[Dict]:
 
     issuers: Set[str] = set()
     wildcard_found = False
-    unexpected_subdomains: List[str] = []
 
     for cert in certs[:50]:  # cap at 50 most recent
         name = (cert.get("name_value") or "").lower()

@@ -28,7 +28,6 @@ CWE-200: Exposure of Sensitive Information to an Unauthorized Actor
 import json
 import re
 from typing import Any, Dict, List
-from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_warn, log_fail

@@ -17,7 +17,7 @@ Playbooks include:
 """
 
 import re
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 # Priority ordering for remediation (lower = fix first)
 _PRIORITY: Dict[str, int] = {
@@ -1890,7 +1890,7 @@ def format_terminal(playbooks: List[Dict[str, Any]]) -> str:
         lines.append(f"\n{color}[{i}] {pb['title']} ({sev.upper()}){reset}")
         lines.append(f"    URL: {pb['url']}")
         lines.append(f"    Time to fix: {pb['time_to_fix']}")
-        lines.append(f"    Steps:")
+        lines.append("    Steps:")
         for step in pb["steps"]:
             lines.append(f"      {step}")
         lines.append(f"    Verify: {pb['verification']}")

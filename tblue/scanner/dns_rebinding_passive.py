@@ -1,6 +1,5 @@
 """DNS rebinding passive — missing Host validation, CORS without origin check, private IP in responses."""
 import re
-from urllib.parse import urlparse
 from .base import BaseScanner
 
 _PRIVATE_IP_RE = re.compile(

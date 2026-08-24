@@ -104,7 +104,6 @@ def _finding_to_rule(finding: Dict[str, Any], target: str) -> Optional[Dict[str,
     # Build detection — use URL path and finding type keyword as indicators
     from urllib.parse import urlparse
     parsed = urlparse(url)
-    path = parsed.path or "/"
 
     # Extract keywords from finding type for detection
     keywords = [w for w in re.split(r"[^\w]+", finding_type.lower()) if len(w) > 3][:5]
@@ -129,7 +128,7 @@ def _finding_to_rule(finding: Dict[str, Any], target: str) -> Optional[Dict[str,
         "id": _rule_id(finding_type, url),
         "status": "experimental",
         "description": detail[:500] if detail else f"{finding_type} detected by Tblue",
-        "references": [f"https://owasp.org/Top10/"],
+        "references": ["https://owasp.org/Top10/"],
         "author": "Tblue (auto-generated)",
         "date": datetime.date.today().isoformat(),
         "modified": datetime.date.today().isoformat(),

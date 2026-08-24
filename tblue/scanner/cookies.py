@@ -6,7 +6,7 @@ cookie prefixes, expiry, scope attributes, entropy, and duplicates.
 
 import math
 import re
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_fail, log_warn
 

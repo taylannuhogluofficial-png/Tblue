@@ -20,7 +20,6 @@ CWE-209: Generation of Error Message Containing Sensitive Information
 CWE-200: Exposure of Sensitive Information
 """
 
-import json
 import re
 from typing import Any, Dict, List, Optional, Tuple
 from urllib.parse import urlparse
@@ -144,11 +143,11 @@ class APIErrorDisclosureScanner(BaseScanner):
                 f"containing sensitive information:\n\n"
                 + "\n".join(f"  - {l}" for l in labels)
                 + "\n\nDetailed error messages in production API responses enable "
-                f"attackers to map internal architecture, identify exploitable "
-                f"libraries, and target specific vulnerability classes.\n\n"
-                f"Fix: configure a generic error handler that returns structured "
-                f"error codes (e.g. {{\"error\": \"invalid_request\"}}) and logs "
-                f"full details server-side only."
+                "attackers to map internal architecture, identify exploitable "
+                "libraries, and target specific vulnerability classes.\n\n"
+                "Fix: configure a generic error handler that returns structured "
+                "error codes (e.g. {\"error\": \"invalid_request\"}) and logs "
+                "full details server-side only."
             )
 
             if severity == "FAIL":

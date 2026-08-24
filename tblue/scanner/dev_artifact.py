@@ -32,8 +32,7 @@ CWE-215: Insertion of Sensitive Information into Log Files
 """
 
 import re
-import json
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner

@@ -15,12 +15,12 @@ Complements the basic oauth.py scanner with deeper checks:
 
 import re
 from typing import Any, Dict, List
-from urllib.parse import urlparse, parse_qs, urlencode
+from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_fail, log_warn
+from tblue.logger import get_logger, log_pass, log_warn
 
 logger = get_logger(__name__)
 

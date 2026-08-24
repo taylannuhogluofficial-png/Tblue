@@ -97,7 +97,7 @@ class RedirectChainScanner(BaseScanner):
             for hop in http_hops:
                 log_fail(logger, f"HTTP hop in redirect chain: {hop['url']}")
                 self.results.append(self._result(origin_url,
-                    f"Redirect chain — HTTP leg before HTTPS destination",
+                    "Redirect chain — HTTP leg before HTTPS destination",
                     "FAIL",
                     detail=(
                         f"The redirect chain passes through a cleartext HTTP hop ({hop['url']}) "
@@ -163,7 +163,7 @@ class RedirectChainScanner(BaseScanner):
         schemes = [h["scheme"] for h in chain]
         for i in range(1, len(schemes) - 1):
             if schemes[i - 1] == "https" and schemes[i] == "http" and schemes[i + 1] == "https":
-                log_warn(logger, f"HTTPS→HTTP→HTTPS sandwich in redirect chain")
+                log_warn(logger, "HTTPS→HTTP→HTTPS sandwich in redirect chain")
                 self.results.append(self._result(origin_url,
                     "Redirect chain — HTTPS→HTTP→HTTPS mixed-protocol pattern",
                     "FAIL",

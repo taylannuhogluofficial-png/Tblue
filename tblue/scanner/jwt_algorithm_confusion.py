@@ -2,7 +2,6 @@
 import re
 import base64
 import json as _json
-from urllib.parse import urlparse
 from .base import BaseScanner
 
 _JWT_RE = re.compile(

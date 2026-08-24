@@ -19,7 +19,7 @@ This scanner probes common API paths and checks response header configuration.
 
 import re
 from typing import Any, Dict, List
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_fail, log_warn
 

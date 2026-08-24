@@ -37,7 +37,7 @@ RFC 9700: Best Current Practice for OAuth 2.0 Security
 
 import re
 from typing import Any, Dict, List, Optional
-from urllib.parse import urljoin, urlparse, parse_qs, urlencode, urlunparse
+from urllib.parse import urljoin, urlparse, urlencode, urlunparse
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_fail, log_warn
@@ -243,7 +243,7 @@ class OAuthPKCEScanner(BaseScanner):
                 log_pass(logger, f"OAuth PKCE — OAuth implementation appears secure on {url}")
                 self.results.append(self._result(
                     url,
-                    f"OAuth PKCE — OAuth implementation appears secure",
+                    "OAuth PKCE — OAuth implementation appears secure",
                     "PASS",
                     detail=(
                         f"Authorization endpoint: {auth_endpoint}\n"
@@ -259,8 +259,8 @@ class OAuthPKCEScanner(BaseScanner):
                     "OAuth PKCE — no OAuth authorization endpoints detected",
                     "PASS",
                     detail=(
-                        f"No OIDC discovery document and no OAuth authorization endpoints "
-                        f"found. If this application uses OAuth, verify the endpoint paths."
+                        "No OIDC discovery document and no OAuth authorization endpoints "
+                        "found. If this application uses OAuth, verify the endpoint paths."
                     ),
                 ))
             return self.results

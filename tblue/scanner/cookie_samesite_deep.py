@@ -31,8 +31,7 @@ CWE-614: Sensitive Cookie Without 'Secure' Attribute
 """
 
 import re
-from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse
+from typing import Any, Dict, List
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_warn, log_fail
@@ -73,7 +72,7 @@ def _check_cookie(cookie: dict, url: str) -> List[Dict]:
     # SameSite=None without Secure
     if samesite == "none" and not secure:
         findings.append({
-            "type": f"cookie-samesite-none-without-secure",
+            "type": "cookie-samesite-none-without-secure",
             "status": "FAIL",
             "detail": (
                 f"Cookie {name!r} at {url} has SameSite=None but is missing the "
@@ -87,7 +86,7 @@ def _check_cookie(cookie: dict, url: str) -> List[Dict]:
     # Missing SameSite on sensitive session cookies
     if samesite is None and _SENSITIVE_NAMES_RE.match(name):
         findings.append({
-            "type": f"cookie-samesite-missing-on-sensitive-cookie",
+            "type": "cookie-samesite-missing-on-sensitive-cookie",
             "status": "WARN",
             "detail": (
                 f"Sensitive cookie {name!r} at {url} has no explicit SameSite attribute.\n\n"
@@ -101,7 +100,7 @@ def _check_cookie(cookie: dict, url: str) -> List[Dict]:
     # SameSite=Lax on sensitive cookie
     if samesite == "lax" and _SENSITIVE_NAMES_RE.match(name):
         findings.append({
-            "type": f"cookie-samesite-lax-on-sensitive-cookie",
+            "type": "cookie-samesite-lax-on-sensitive-cookie",
             "status": "WARN",
             "detail": (
                 f"Sensitive cookie {name!r} at {url} uses SameSite=Lax.\n\n"

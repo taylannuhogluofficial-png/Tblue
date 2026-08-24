@@ -19,7 +19,7 @@ CWE-90: Improper Neutralization of Special Elements used in an LDAP Query
 
 import re
 from typing import Any, Dict, List
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 
@@ -160,7 +160,6 @@ class LDAPinjectionScanner(BaseScanner):
             return
 
         baseline_body = baseline.text or ""
-        baseline_status = baseline.status_code
 
         # Check if baseline itself leaks LDAP errors
         if _LDAP_ERROR_RE.search(baseline_body):
@@ -219,7 +218,7 @@ class LDAPinjectionScanner(BaseScanner):
                     "LDAP injection — LDAP error triggered by metacharacter probe",
                     "WARN",
                     detail=(
-                        f"Injecting LDAP metacharacters into the username field caused "
+                        "Injecting LDAP metacharacters into the username field caused "
                         "an LDAP-related error message in the response. "
                         "This confirms the input reaches an LDAP query. "
                         "Fix: escape all LDAP special characters; "

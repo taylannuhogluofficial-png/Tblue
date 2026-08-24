@@ -192,7 +192,7 @@ def generate(target: str, all_results: Dict[str, List[Any]], output_path: str,
         json.dump(model, f, indent=2)
 
     with open(md_path, "w", encoding="utf-8") as f:
-        f.write(f"# STRIDE Threat Model\n\n")
+        f.write("# STRIDE Threat Model\n\n")
         f.write(f"**Target:** {target}  \n")
         f.write(f"**Tool:** Tblue {__version__}  \n")
         f.write(f"**Generated:** {model['generated']}  \n")

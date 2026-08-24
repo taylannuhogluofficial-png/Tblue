@@ -1,6 +1,6 @@
 """API pagination abuse — missing pagination limits, offset-based mass data extraction, total count disclosure."""
 import re
-from urllib.parse import urlparse, urlencode
+from urllib.parse import urlparse
 from .base import BaseScanner
 
 _API_PATHS = [

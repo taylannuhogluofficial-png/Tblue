@@ -1,7 +1,6 @@
 """API pagination security — missing limits, excessive data exposure, cursor leakage."""
 import re
-import json
-from urllib.parse import urlparse, urlencode, urljoin
+from urllib.parse import urlparse
 from .base import BaseScanner
 
 _API_PROBE_PATHS = [

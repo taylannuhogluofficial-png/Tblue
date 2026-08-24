@@ -1,6 +1,5 @@
 """Feature/Permissions Policy security — missing policy, overly permissive allowlists."""
 import re
-from urllib.parse import urlparse
 from .base import BaseScanner
 
 _PERMISSIONS_POLICY_HEADER = "permissions-policy"

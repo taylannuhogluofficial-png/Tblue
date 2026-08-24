@@ -20,7 +20,7 @@ All checks are passive read-only analysis.
 import re
 import base64
 from typing import Any, Dict, List
-from urllib.parse import urlparse, parse_qs, unquote
+from urllib.parse import unquote
 
 from bs4 import BeautifulSoup
 

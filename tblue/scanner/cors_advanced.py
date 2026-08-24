@@ -51,7 +51,6 @@ class CORSAdvancedScanner(BaseScanner):
         self.results = []
 
         parsed = urlparse(url)
-        base = f"{parsed.scheme}://{parsed.netloc}"
         host = parsed.netloc
 
         # Extract just the domain (without port)
@@ -72,13 +71,13 @@ class CORSAdvancedScanner(BaseScanner):
                         self.results.append(self._result(
                             url, "CORS Advanced — arbitrary origin reflected with credentials", "FAIL",
                             detail=(
-                                f"Server reflects any Origin in Access-Control-Allow-Origin AND "
-                                f"Access-Control-Allow-Credentials: true. This is a critical CORS "
-                                f"misconfiguration: any website can make credentialed cross-origin "
-                                f"requests and read the response, enabling account takeover if the "
-                                f"victim is authenticated. "
-                                f"Fix: validate Origin against a strict allowlist; "
-                                f"never combine ACAO: * or reflected-origin with ACAC: true."
+                                "Server reflects any Origin in Access-Control-Allow-Origin AND "
+                                "Access-Control-Allow-Credentials: true. This is a critical CORS "
+                                "misconfiguration: any website can make credentialed cross-origin "
+                                "requests and read the response, enabling account takeover if the "
+                                "victim is authenticated. "
+                                "Fix: validate Origin against a strict allowlist; "
+                                "never combine ACAO: * or reflected-origin with ACAC: true."
                             )
                         ))
                     else:

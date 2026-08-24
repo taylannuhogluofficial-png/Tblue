@@ -26,11 +26,11 @@ CWE-693: Protection Mechanism Failure
 CWE-116: Improper Encoding or Escaping of Output
 """
 
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List
 from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_warn, log_fail
+from tblue.logger import get_logger, log_pass, log_warn
 
 logger = get_logger(__name__)
 

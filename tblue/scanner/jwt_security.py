@@ -20,7 +20,6 @@ import json
 import base64
 import time
 from typing import List, Dict, Any, Optional, Tuple
-from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_fail, log_warn
@@ -116,7 +115,6 @@ class JWTScanner(BaseScanner):
     def _analyse(self, location: str, token: str, header: dict, alg: str) \
             -> List[Dict[str, Any]]:
         results = []
-        url_ref = f"Found in: {location}"
 
         if alg.lower() == "none" or alg in _NONE_ALGS:
             log_fail(logger, f"JWT with alg:none — {location}")

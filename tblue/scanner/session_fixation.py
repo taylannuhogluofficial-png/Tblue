@@ -34,11 +34,11 @@ CWE-384: Session Fixation
 """
 
 import re
-from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse, parse_qs
+from typing import Any, Dict, List
+from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_warn, log_fail
+from tblue.logger import get_logger, log_pass, log_warn
 
 logger = get_logger(__name__)
 
@@ -152,7 +152,7 @@ class SessionFixationScanner(BaseScanner):
                     log_warn(logger, f"Session Fixation — pre-login cookie {name!r} without SameSite at {login_url}")
                     self.results.append(self._result(
                         login_url,
-                        f"Session Fixation — pre-login session cookie without SameSite",
+                        "Session Fixation — pre-login session cookie without SameSite",
                         "WARN",
                         detail=(
                             f"Login page sets session cookie '{name}' before authentication, "
@@ -228,8 +228,8 @@ class SessionFixationScanner(BaseScanner):
                 "Session Fixation — no session fixation indicators detected",
                 "PASS",
                 detail=(
-                    f"No session cookies set before login, no URL-based session params, "
-                    f"and no SameSite misconfiguration found."
+                    "No session cookies set before login, no URL-based session params, "
+                    "and no SameSite misconfiguration found."
                 ),
             ))
 

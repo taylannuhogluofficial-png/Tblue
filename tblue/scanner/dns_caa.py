@@ -27,8 +27,7 @@ RFC 8659: DNS Certification Authority Authorization (CAA) Resource Record
 
 import socket
 import struct
-import re
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
@@ -226,7 +225,7 @@ class DNSCAAScanner(BaseScanner):
                         # Unknown CA — flag for review
                         findings.append({
                             "severity": "WARN",
-                            "type": f"caa-unknown-ca",
+                            "type": "caa-unknown-ca",
                             "msg": (
                                 f"CAA record authorizes unknown CA: '{ca_domain}'. "
                                 f"Verify this is intentional and that the CA is trustworthy."
@@ -238,7 +237,7 @@ class DNSCAAScanner(BaseScanner):
             caa_summary = ", ".join(f"{tag}={val}" for _, _, tag, val in all_caa[:5])
             self.results.append(self._result(
                 url,
-                f"DNS CAA — CAA records found and correctly configured",
+                "DNS CAA — CAA records found and correctly configured",
                 "PASS",
                 detail=f"Domain: {domain}\nCAA records: {caa_summary}",
             ))

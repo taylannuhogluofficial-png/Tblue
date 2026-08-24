@@ -66,8 +66,8 @@ def _check_jwt_in_body(body: str, url: str) -> list:
                 "type": "jwt_alg_none_in_page",
                 "status": "FAIL",
                 "url": url,
-                "detail": (f"JWT with alg:none found in page — this token has no signature, "
-                           f"allowing anyone to forge tokens by setting alg to none"),
+                "detail": ("JWT with alg:none found in page — this token has no signature, "
+                           "allowing anyone to forge tokens by setting alg to none"),
             })
         elif alg in ("hs256", "hs384", "hs512"):
             findings.append({

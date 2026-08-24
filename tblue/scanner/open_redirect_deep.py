@@ -1,6 +1,6 @@
 """Open redirect deep — URL parameter redirect, meta-refresh redirect, JS location assignment."""
 import re
-from urllib.parse import urlparse, parse_qs, urlencode, urljoin
+from urllib.parse import urlparse
 from .base import BaseScanner
 
 _REDIRECT_PARAMS = [

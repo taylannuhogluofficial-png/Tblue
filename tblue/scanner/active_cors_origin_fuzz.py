@@ -59,7 +59,7 @@ class ActiveCORSOriginFuzzScanner(BaseScanner):
             if label == "null_origin" and is_null and creds_true:
                 findings.append(self._result(
                     url, "active_cors_null_origin_with_credentials", "FAIL",
-                    detail=f"Server reflects Access-Control-Allow-Origin: null with Access-Control-Allow-Credentials: true — a sandboxed iframe can set Origin: null and make cross-origin credentialed requests; attacker serves victim an iframe with sandbox='allow-scripts allow-same-origin' and reads authenticated API responses (CVE pattern: CORS null origin bypass).",
+                    detail="Server reflects Access-Control-Allow-Origin: null with Access-Control-Allow-Credentials: true — a sandboxed iframe can set Origin: null and make cross-origin credentialed requests; attacker serves victim an iframe with sandbox='allow-scripts allow-same-origin' and reads authenticated API responses (CVE pattern: CORS null origin bypass).",
                 ))
 
             elif label == "null_origin" and is_null:

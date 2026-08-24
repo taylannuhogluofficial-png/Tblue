@@ -24,11 +24,11 @@ CWE-200: Exposure of Sensitive Information
 """
 
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from urllib.parse import urlparse, urljoin
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_warn, log_fail
+from tblue.logger import get_logger, log_pass, log_warn
 
 logger = get_logger(__name__)
 
@@ -83,17 +83,17 @@ def _scan_for_keys(body: str, url: str) -> List[Dict]:
                 "detail": (
                     f"{provider} ({key_type}) found in response at {url}.\n\n"
                     + (
-                        f"Server-side SDK keys grant full feature flag read/write access "
-                        f"and sometimes full admin API access. Exposure in client-facing "
-                        f"code allows attackers to enumerate all feature flags, their "
-                        f"targeting rules, and potentially modify them.\n\n"
+                        "Server-side SDK keys grant full feature flag read/write access "
+                        "and sometimes full admin API access. Exposure in client-facing "
+                        "code allows attackers to enumerate all feature flags, their "
+                        "targeting rules, and potentially modify them.\n\n"
                         if server_side else
-                        f"Client-side keys have limited read-only scope but still expose "
-                        f"which features are enabled and targeting rules.\n\n"
+                        "Client-side keys have limited read-only scope but still expose "
+                        "which features are enabled and targeting rules.\n\n"
                     ) +
-                    f"Fix: move SDK keys to server-side environment variables. "
-                    f"Use a feature flag proxy/relay that serves only evaluated boolean "
-                    f"values to the client, never raw keys."
+                    "Fix: move SDK keys to server-side environment variables. "
+                    "Use a feature flag proxy/relay that serves only evaluated boolean "
+                    "values to the client, never raw keys."
                 ),
             })
     return findings

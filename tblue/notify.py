@@ -29,10 +29,8 @@ Payload sent to generic/discord webhooks follows the Tblue summary schema:
 """
 
 import json
-import re
 import datetime
-from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urlparse
+from typing import Any, Dict, List, Tuple
 
 import requests as req_lib
 
@@ -207,7 +205,7 @@ def _send_teams(webhook_url: str, p: Dict[str, Any]) -> bool:
         "summary":     f"Tblue scan: {p['target']} — {p['score']}/100",
         "sections": [
             {
-                "activityTitle": f"Tblue Security Scan",
+                "activityTitle": "Tblue Security Scan",
                 "activitySubtitle": p["target"],
                 "facts": [
                     {"name": "Score",    "value": f"{p['score']}/100 ({p['grade']})"},

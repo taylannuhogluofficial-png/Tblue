@@ -22,8 +22,7 @@ CWE-757: Selection of Less-Secure Algorithm During Negotiation (QUIC bypass)
 """
 
 import re
-from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse
+from typing import Any, Dict, List
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_fail, log_warn
@@ -85,7 +84,7 @@ class HTTP3QUICScanner(BaseScanner):
 
         # Clear advertisement (ma=0 or "clear")
         if "clear" in alt_svc_list.lower():
-            log_pass(logger, f"HTTP/3 QUIC — Alt-Svc: clear (QUIC disabled)")
+            log_pass(logger, "HTTP/3 QUIC — Alt-Svc: clear (QUIC disabled)")
             self.results.append(self._result(
                 url, "HTTP/3 QUIC — Alt-Svc: clear (properly disabled)", "PASS",
                 detail="Alt-Svc: clear correctly revokes any cached alternative service."))
@@ -118,7 +117,7 @@ class HTTP3QUICScanner(BaseScanner):
 
         # Check ma (max-age) — very short or missing
         if ma_value is None:
-            log_warn(logger, f"HTTP/3 QUIC — Alt-Svc missing ma (max-age) directive")
+            log_warn(logger, "HTTP/3 QUIC — Alt-Svc missing ma (max-age) directive")
             self.results.append(self._result(
                 url,
                 "HTTP/3 QUIC — Alt-Svc missing ma (max-age) parameter",
@@ -144,7 +143,7 @@ class HTTP3QUICScanner(BaseScanner):
 
         # Check if H3 is advertised on HTTP (not HTTPS) — nonsensical
         if url.startswith("http://") and (h3_matches or quic_matches):
-            log_fail(logger, f"HTTP/3 QUIC — Alt-Svc H3 advertised on HTTP (non-TLS) connection")
+            log_fail(logger, "HTTP/3 QUIC — Alt-Svc H3 advertised on HTTP (non-TLS) connection")
             self.results.append(self._result(
                 url,
                 "HTTP/3 QUIC — H3 advertised on plaintext HTTP connection",

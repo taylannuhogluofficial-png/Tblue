@@ -158,7 +158,6 @@ class HTTPVerbTamperingScanner(BaseScanner):
         # Servers should return 405 for unrecognized methods
         for method in _EXOTIC_METHODS:
             try:
-                import requests
                 parsed = urlparse(url)
                 session = self.http._session if hasattr(self.http, "_session") else None
                 if session is None:

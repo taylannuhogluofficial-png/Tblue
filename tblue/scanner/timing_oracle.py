@@ -26,11 +26,10 @@ CWE-208: Observable Timing Discrepancy
 CWE-203: Observable Behavioral Discrepancy
 """
 
-import re
 import time
 import statistics
-from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urlparse, urlencode, urljoin
+from typing import Any, Dict, List
+from urllib.parse import urlencode
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_fail, log_warn

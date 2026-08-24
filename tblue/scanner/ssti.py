@@ -208,7 +208,7 @@ class SSTIScanner(BaseScanner):
             snippet = m.group(0) if m else ""
             log_warn(logger, f"Template engine version disclosure in headers: {snippet}")
             self.results.append(self._result(
-                url, f"SSTI — template engine version disclosed in headers", "WARN",
+                url, "SSTI — template engine version disclosed in headers", "WARN",
                 detail=(
                     f"Template engine version found in response header: '{snippet}'. "
                     "Older versions may contain known SSTI vulnerabilities. "

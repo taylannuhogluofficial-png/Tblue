@@ -15,10 +15,9 @@ quickly identify missing consent infrastructure.
 
 import re
 from typing import List, Dict, Any
-from urllib.parse import urljoin, urlparse
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_warn, log_fail
+from tblue.logger import get_logger, log_pass, log_warn
 
 logger = get_logger(__name__)
 

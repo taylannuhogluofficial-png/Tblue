@@ -861,7 +861,7 @@ def _trend_section(scan_diff) -> str:
     elif delta < 0:
         delta_html = f'<span class="trend-delta-down">▼ {delta} pts</span>'
     else:
-        delta_html = f'<span class="trend-delta-flat">→ no change</span>'
+        delta_html = '<span class="trend-delta-flat">→ no change</span>'
 
     new_items = "".join(
         f'<div class="trend-item trend-new">{"❌" if s == "FAIL" else "⚠️"} {_e(k[:60])}</div>'

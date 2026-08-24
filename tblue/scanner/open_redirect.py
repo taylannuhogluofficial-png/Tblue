@@ -12,7 +12,6 @@ of allowed internal paths/domains before redirecting.
 
 import re
 from typing import List, Dict, Any
-from urllib.parse import urlparse, parse_qs
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_warn

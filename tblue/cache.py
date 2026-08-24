@@ -16,7 +16,7 @@ Design:
 import threading
 import time
 from collections import OrderedDict
-from typing import Any, Callable, Dict, Optional, Tuple
+from typing import Any, Callable, Dict, Optional
 
 _MISS     = object()   # sentinel
 

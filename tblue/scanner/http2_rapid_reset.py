@@ -42,7 +42,6 @@ class HTTP2RapidResetScanner(BaseScanner):
     def scan(self, url: str) -> List[Dict[str, Any]]:
         self.results = []
         parsed = urlparse(url)
-        origin = f"{parsed.scheme}://{parsed.netloc}"
 
         if parsed.scheme != "https":
             self.results.append(self._result(

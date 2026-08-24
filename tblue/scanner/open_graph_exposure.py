@@ -214,8 +214,8 @@ class OpenGraphExposureScanner(BaseScanner):
                 f"OG Exposure — JSON-LD structured data contains PII ({len(pii)} item(s))",
                 "WARN",
                 detail=(
-                    f"JSON-LD structured data (application/ld+json) contains potentially "
-                    f"sensitive information:\n\n"
+                    "JSON-LD structured data (application/ld+json) contains potentially "
+                    "sensitive information:\n\n"
                     + "\n".join(f"  • {p}" for p in pii[:5])
                     + "\n\nReview whether this data needs to be public. Emails in schema.org "
                       "data are harvested by scrapers."

@@ -5,7 +5,6 @@ Follows redirects to check headers on the final destination URL.
 """
 
 from typing import List, Dict, Any
-from requests import Session
 from tblue.scanner.base import BaseScanner
 from tblue.definitions.headers import SECURITY_HEADERS, DEPRECATED_HEADERS
 from tblue.logger import get_logger, log_pass, log_fail, log_warn, log_head

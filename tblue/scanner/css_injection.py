@@ -36,8 +36,8 @@ References:
 """
 
 import re
-from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse, parse_qs, urlencode, urljoin, quote
+from typing import Any, Dict, List
+from urllib.parse import urlparse, parse_qs, urlencode
 
 from bs4 import BeautifulSoup
 
@@ -164,7 +164,7 @@ class CSSInjectionScanner(BaseScanner):
                         import_params = set(parse_qs(import_parsed.query).keys())
                         overlap = import_params & query_params
                         if overlap:
-                            log_warn(logger, f"CSS injection: @import with URL param in page URL")
+                            log_warn(logger, "CSS injection: @import with URL param in page URL")
                             self.results.append(self._result(
                                 url,
                                 "CSS injection — @import with user-controlled URL parameter",

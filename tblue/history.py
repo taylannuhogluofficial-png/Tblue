@@ -9,11 +9,10 @@ On each scan, loads the most recent previous snapshot and computes a diff:
 """
 
 import json
-import os
 import re
 from datetime import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 
 from tblue.scoring import ScanScore
 

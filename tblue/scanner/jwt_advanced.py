@@ -21,7 +21,7 @@ import re
 import json
 import base64
 from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 
@@ -128,7 +128,7 @@ def _analyze_jwt(token: str, source_url: str) -> List[Dict[str, Any]]:
     # jku/x5u over HTTP (insecure key distribution)
     if jku and jku.startswith("http://"):
         issues.append({
-            "type": f"JWT Advanced — jku header uses HTTP (insecure key endpoint)",
+            "type": "JWT Advanced — jku header uses HTTP (insecure key endpoint)",
             "status": "FAIL",
             "detail": (
                 f"JWT 'jku' header points to an HTTP (not HTTPS) key endpoint: '{jku}'. "

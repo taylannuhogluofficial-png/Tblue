@@ -9,10 +9,9 @@ EdOverflow/can-i-take-over-xyz project — no external API calls.
 
 import re
 from typing import List, Dict, Any, Optional
-from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_warn, log_fail
+from tblue.logger import get_logger, log_fail
 
 logger = get_logger(__name__)
 

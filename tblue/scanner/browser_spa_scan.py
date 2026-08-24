@@ -24,7 +24,7 @@ Paid equivalent: Burp Suite Pro crawler with JavaScript analysis.
 
 import re
 from typing import Any, Dict, List, Set
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
 from tblue.browser.engine import playwright_available, BrowserSession
@@ -186,8 +186,8 @@ class BrowserSPAScanner(BaseScanner):
                 f"Browser SPA — {len(accessible_sensitive)} sensitive route(s) accessible without authentication",
                 "FAIL",
                 detail=(
-                    f"The following sensitive client-side routes were accessible in the browser "
-                    f"without being redirected to a login page:\n"
+                    "The following sensitive client-side routes were accessible in the browser "
+                    "without being redirected to a login page:\n"
                     + "\n".join(f"• {base + r}" for r in accessible_sensitive)
                     + "\n\nClient-side route protection (PrivateRoute, AuthGuard) can be bypassed "
                     "if the server does not also enforce authentication on the underlying API calls. "

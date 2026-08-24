@@ -17,8 +17,7 @@ Tools exposed:
 import asyncio
 import json
 import os
-import re
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import ThreadPoolExecutor
 from typing import Optional
 
 import requests

@@ -17,7 +17,7 @@ Covers both the Permissions-Policy header and the deprecated Feature-Policy head
 """
 
 import re
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_warn, log_fail

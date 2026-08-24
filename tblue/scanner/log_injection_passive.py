@@ -1,6 +1,6 @@
 """Log injection passive — user-supplied data echoed in server logs via error pages, newline in URL."""
 import re
-from urllib.parse import urlparse, quote
+from urllib.parse import urlparse
 from .base import BaseScanner
 
 _LOG_INJECT_PROBE = "tbl9z7x-LOG-INJECT\r\n[FAKE] Admin logged in"

@@ -102,7 +102,6 @@ class ContentDispositionSecurityScanner(BaseScanner):
 
     def _check_inline_dangerous(self, url: str, ct: str, cd: str, path: str) -> None:
         is_attachment = "attachment" in cd
-        is_inline     = "inline" in cd or not cd
 
         if is_attachment:
             return

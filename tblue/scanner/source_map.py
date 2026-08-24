@@ -34,7 +34,7 @@ OWASP A05:2021 — Security Misconfiguration
 
 import re
 import json
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from urllib.parse import urlparse, urljoin
 
 from bs4 import BeautifulSoup

@@ -14,7 +14,7 @@ from typing import List, Dict, Any
 from urllib.parse import urlparse, urljoin
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_fail, log_warn
+from tblue.logger import get_logger, log_pass, log_warn
 
 logger = get_logger(__name__)
 

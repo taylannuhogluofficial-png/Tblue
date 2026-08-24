@@ -30,7 +30,7 @@ CWE-312: Cleartext Storage of Sensitive Information
 """
 
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from urllib.parse import urlparse, urljoin
 
 from tblue.scanner.base import BaseScanner
@@ -120,7 +120,7 @@ class FormActionHijackingScanner(BaseScanner):
                     f"Form action hijacking — javascript: action URI: {action[:80]}",
                     "WARN",
                     detail=(
-                        f"A form has action='javascript:...'. When submitted, this executes "
+                        "A form has action='javascript:...'. When submitted, this executes "
                         "arbitrary JavaScript. If combined with unsafe-inline CSP, this is "
                         "an XSS vector. Fix: use event handlers (onsubmit) instead of "
                         "javascript: URI in form action."
@@ -133,7 +133,7 @@ class FormActionHijackingScanner(BaseScanner):
                 log_warn(logger, f"Data URI form action at {url}: {action[:80]}")
                 self.results.append(self._result(
                     url,
-                    f"Form action hijacking — data: URI in form action",
+                    "Form action hijacking — data: URI in form action",
                     "WARN",
                     detail=(
                         "A form has action='data:...'. Data URI form actions are unusual "
@@ -184,7 +184,7 @@ class FormActionHijackingScanner(BaseScanner):
                     log_warn(logger, f"Form action downgrade HTTP on HTTPS page at {url}")
                     self.results.append(self._result(
                         url,
-                        f"Form action hijacking — HTTP action on HTTPS page (mixed content POST)",
+                        "Form action hijacking — HTTP action on HTTPS page (mixed content POST)",
                         "FAIL",
                         detail=(
                             f"Form action='{action}' submits to HTTP from an HTTPS page. "

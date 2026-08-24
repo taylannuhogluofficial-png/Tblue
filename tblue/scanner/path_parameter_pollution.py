@@ -28,9 +28,8 @@ CWE-235: Improper Handling of Extra Parameters
 CWE-706: Use of Incorrectly-Resolved Name or Reference
 """
 
-import re
 from typing import Any, Dict, List, Optional
-from urllib.parse import urljoin, urlparse, urlunparse, quote
+from urllib.parse import urlparse, urlunparse
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_fail, log_warn

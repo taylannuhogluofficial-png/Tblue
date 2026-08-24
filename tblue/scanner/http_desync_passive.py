@@ -1,6 +1,5 @@
 """HTTP desync / request tunneling passive detection."""
 import re
-from urllib.parse import urlparse
 from .base import BaseScanner
 
 # Indicators that a reverse proxy or load balancer is in play

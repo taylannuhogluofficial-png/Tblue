@@ -27,7 +27,7 @@ CWE-1035: OWASP Top 10 2021 A06 — Vulnerable and Outdated Components
 """
 
 import re
-from typing import List, Dict, Any, Optional, Tuple
+from typing import List, Dict, Any, Tuple
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_warn, log_fail

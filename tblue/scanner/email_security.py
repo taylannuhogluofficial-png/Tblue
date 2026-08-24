@@ -194,7 +194,7 @@ class EmailSecurityScanner(BaseScanner):
             self.results.append(self._result(
                 url, "Email security — DMARC reporting not configured (rua missing)", "WARN",
                 detail=(
-                    f"DMARC record has no rua tag — you won't receive aggregate reports about "
+                    "DMARC record has no rua tag — you won't receive aggregate reports about "
                     "spoofing attempts. Fix: add rua=mailto:dmarc@" + domain + " to your DMARC record."
                 )
             ))

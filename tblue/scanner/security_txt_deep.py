@@ -105,7 +105,7 @@ class SecurityTxtDeepScanner(BaseScanner):
 
                     # HTTPS enforcement (RFC 9116 Section 3)
                     if urlparse(probe).scheme != "https":
-                        log_fail(logger, f"security.txt Deep — served over HTTP, not HTTPS")
+                        log_fail(logger, "security.txt Deep — served over HTTP, not HTTPS")
                         self.results.append(self._result(
                             probe,
                             "security.txt Deep — security.txt served over HTTP (RFC 9116 requires HTTPS)",
@@ -178,7 +178,7 @@ class SecurityTxtDeepScanner(BaseScanner):
             log_warn(logger, f"security.txt Deep — invalid Expires format: {expires_str!r}")
             self.results.append(self._result(
                 url,
-                f"security.txt Deep — Expires field has invalid ISO 8601 format",
+                "security.txt Deep — Expires field has invalid ISO 8601 format",
                 "WARN",
                 detail=(
                     f"Expires: {expires_str}\n\n"
@@ -231,7 +231,7 @@ class SecurityTxtDeepScanner(BaseScanner):
                 log_warn(logger, f"security.txt Deep — Contact URL uses HTTP (not HTTPS): {contact}")
                 self.results.append(self._result(
                     url,
-                    f"security.txt Deep — Contact field uses HTTP URL (should be HTTPS)",
+                    "security.txt Deep — Contact field uses HTTP URL (should be HTTPS)",
                     "WARN",
                     detail=(
                         f"Contact: {contact}\n\n"

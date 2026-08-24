@@ -21,10 +21,9 @@ Payload schema for all backends:
 """
 
 import os
-import json
 import base64
 import datetime
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 
 import requests as req_lib
 

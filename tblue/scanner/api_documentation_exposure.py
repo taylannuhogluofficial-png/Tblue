@@ -88,7 +88,6 @@ class APIDocumentationExposureScanner(BaseScanner):
                 if not doc_type:
                     continue
 
-                found_doc = True
                 sev = "FAIL" if has_sensitive else "WARN"
                 detail = (f"{doc_type} API documentation exposed at {path} — "
                           f"provides attacker with complete API endpoint map"

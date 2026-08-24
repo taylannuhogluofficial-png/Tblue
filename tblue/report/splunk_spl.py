@@ -13,7 +13,7 @@ patterns associated with the vulnerability being exploited.
 import re
 import datetime
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Dict, List
 
 # Splunk search components per finding category
 _SPL_TEMPLATES: List[tuple] = [
@@ -120,15 +120,15 @@ def generate(target: str, all_results: Dict[str, List], output_path: str,
              scan_score=None) -> None:
     """Generate Splunk SPL correlation searches from scan findings."""
     lines = [
-        f"# Tblue Splunk SPL Correlation Rules",
+        "# Tblue Splunk SPL Correlation Rules",
         f"# Target: {target}",
         f"# Generated: {datetime.datetime.now(datetime.timezone.utc).isoformat()}",
         f"# Score: {scan_score.score if scan_score else 'N/A'}",
-        f"",
-        f"# ====================================================================",
-        f"# INSTRUCTIONS: Import into Splunk > Settings > Searches, Reports, Alerts",
-        f"# ====================================================================",
-        f"",
+        "",
+        "# ====================================================================",
+        "# INSTRUCTIONS: Import into Splunk > Settings > Searches, Reports, Alerts",
+        "# ====================================================================",
+        "",
     ]
 
     seen: set = set()
@@ -152,7 +152,7 @@ def generate(target: str, all_results: Dict[str, List], output_path: str,
 
             lines.append(f"# ── Rule {rule_num}: {finding_type[:80]} ──")
             lines.append(f"# Status: {status} | Module: {module_name}")
-            lines.append(f"# SPL Search:")
+            lines.append("# SPL Search:")
             lines.append(spl)
             lines.append("")
 

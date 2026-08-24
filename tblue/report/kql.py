@@ -13,7 +13,7 @@ import json
 import datetime
 import hashlib
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Dict, List
 
 _KQL_TEMPLATES: List[tuple] = [
     (r"xss|cross.site.script", (

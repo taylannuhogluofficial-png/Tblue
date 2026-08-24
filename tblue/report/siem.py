@@ -18,7 +18,7 @@ Usage (Python):
 
 import json
 from datetime import datetime, timezone
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 
 from tblue import __version__
 from tblue.scoring import classify_severity
@@ -172,7 +172,7 @@ def _to_leef(flat: List[Dict[str, Any]]) -> str:
         event_id = _cef_slug(f["type"])
         attrs = "\t".join([
             f"devTime={ts}",
-            f"devTimeFormat=ISO 8601",
+            "devTimeFormat=ISO 8601",
             f"cat={_leef_escape(f['module'])}",
             f"dstURL={_leef_escape(f['url'])}",
             f"severity={f['severity'].upper()}",

@@ -5,7 +5,7 @@ detailed analysis of every directive — no active probing.
 """
 
 import re
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from bs4 import BeautifulSoup
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_fail, log_warn, log_head

@@ -102,7 +102,6 @@ class DirectoryListingScanner(BaseScanner):
                 if _is_listing(body):
                     is_vcs = directory in _VCS_DIRS
                     exposed.append((probe_url, is_vcs))
-                    status = "FAIL"
                     if is_vcs:
                         log_fail(logger, f"VCS directory listing exposed: {probe_url}")
                         self.results.append(self._result(

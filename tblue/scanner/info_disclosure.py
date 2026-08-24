@@ -5,7 +5,7 @@ error pages, internal IPs, emails, API keys, and source maps.
 """
 
 import re
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from urllib.parse import urljoin, urlparse
 from bs4 import BeautifulSoup, Comment
 from tblue.scanner.base import BaseScanner

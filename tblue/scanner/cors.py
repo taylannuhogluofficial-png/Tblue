@@ -9,7 +9,7 @@ Probes the target URL with crafted Origin headers to detect:
 - Subdomain-wildcard reflection (warn — subdomain takeover → CORS bypass)
 """
 
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner

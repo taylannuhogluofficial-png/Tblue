@@ -57,7 +57,7 @@ class SensitiveCacheControlScanner(BaseScanner):
         if is_sensitive_form and not _SCC_NO_STORE_RE.search(cache_control):
             findings.append(self._result(
                 url, "sensitive_cache_no_store_missing", "FAIL",
-                detail=f"Sensitive page (login/payment/password form) missing Cache-Control: no-store — browsers and intermediate proxies may cache the response including form values; cached pages containing credentials or payment data are readable by subsequent users on shared devices or via browser history.",
+                detail="Sensitive page (login/payment/password form) missing Cache-Control: no-store — browsers and intermediate proxies may cache the response including form values; cached pages containing credentials or payment data are readable by subsequent users on shared devices or via browser history.",
             ))
 
         if is_sensitive_form and not _SCC_PRIVATE_RE.search(cache_control):

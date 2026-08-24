@@ -1,7 +1,6 @@
 """CSRF token strength — weak/missing tokens, token length, predictability, SameSite cookie bypass."""
 import re
 import math
-from urllib.parse import urlparse
 from .base import BaseScanner
 
 _CSRF_INPUT_RE = re.compile(

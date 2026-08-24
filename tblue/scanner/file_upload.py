@@ -20,7 +20,7 @@ All checks are passive analysis — no files are uploaded.
 
 import re
 from typing import Any, Dict, List, Set
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
 

@@ -122,7 +122,6 @@ class GRPCScanner(BaseScanner):
                     continue
 
                 if "reflection" in path.lower():
-                    found_reflection = True
                     log_fail(logger, f"gRPC reflection API exposed: {probe_url}")
                     self.results.append(self._result(
                         probe_url, "gRPC — reflection API exposed (full service enumeration)", "FAIL",
@@ -138,7 +137,6 @@ class GRPCScanner(BaseScanner):
                         )
                     ))
                 elif "health" in path.lower():
-                    found_health = True
                     log_warn(logger, f"gRPC health check endpoint exposed: {probe_url}")
                     self.results.append(self._result(
                         probe_url, "gRPC — health check endpoint accessible", "WARN",

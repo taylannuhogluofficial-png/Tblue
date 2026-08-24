@@ -10,10 +10,10 @@ Reference: https://docs.oasis-open.org/sarif/sarif/v2.1.0/sarif-v2.1.0.html
 
 import json
 from datetime import datetime, timezone
-from typing import Dict, List, Any
+from typing import Dict, List
 
 from tblue import __version__
-from tblue.scoring import classify_severity, SEVERITY_ORDER
+from tblue.scoring import classify_severity
 
 _SCHEMA  = "https://json.schemastore.org/sarif-2.1.0.json"
 _TOOL_URI = "https://github.com/taylannuhogluofficial-png/Tblue"

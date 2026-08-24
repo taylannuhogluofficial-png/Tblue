@@ -20,9 +20,8 @@ Paid equivalents: Burp Suite SAML Raider extension, SAMLReQuest.
 """
 
 import re
-import base64
 from typing import Any, Dict, List
-from urllib.parse import urlparse, urljoin, parse_qs
+from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 

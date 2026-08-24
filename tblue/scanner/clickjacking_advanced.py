@@ -71,7 +71,6 @@ def _analyze_framing_protection(headers: dict, url: str) -> list:
 def _check_js_framebusting(body: str, url: str) -> list:
     """Check if page uses JS frame-busting instead of headers (weaker protection)."""
     findings = []
-    has_header_protection = False  # will be determined by caller
     if _CLICKJACKING_JS_BUSTERS_RE.search(body):
         findings.append({
             "type": "clickjacking_js_framebuster_only",

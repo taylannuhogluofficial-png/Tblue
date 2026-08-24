@@ -213,7 +213,7 @@ class SSRFDetectionScanner(BaseScanner):
                     f"SSRF — internal connection error via parameter '{param}'",
                     "WARN",
                     detail=(
-                        f"The server returned a network error ('connection refused', "
+                        "The server returned a network error ('connection refused', "
                         "'failed to connect') when '{param}' was set to an internal URL. "
                         "This confirms the server attempted an outbound request to the "
                         "internal/localhost target before failing. "

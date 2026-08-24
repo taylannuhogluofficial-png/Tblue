@@ -196,7 +196,7 @@ class ClickjackingDeepScanner(BaseScanner):
                 log_warn(logger, f"Clickjacking Deep — no protection on sensitive page {ep_url}")
                 self.results.append(self._result(
                     ep_url,
-                    f"Clickjacking Deep — sensitive page unprotected",
+                    "Clickjacking Deep — sensitive page unprotected",
                     "WARN",
                     detail=(
                         f"Sensitive page {ep_url} is accessible (HTTP 200) and has no "

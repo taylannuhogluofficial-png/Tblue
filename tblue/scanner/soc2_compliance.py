@@ -8,10 +8,9 @@ No extra HTTP requests — analysis is based on the initial response.
 import re
 from typing import List, Dict, Any
 from urllib.parse import urlparse
-from bs4 import BeautifulSoup
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_warn, log_fail
+from tblue.logger import get_logger
 
 logger = get_logger(__name__)
 

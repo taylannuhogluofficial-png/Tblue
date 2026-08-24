@@ -198,7 +198,7 @@ class OpenAPIExposureScanner(BaseScanner):
         for match in _SECRET_IN_EXAMPLE_RE.finditer(body):
             value = match.group(1)
             if _REAL_VALUE_RE.match(value):
-                log_fail(logger, f"OpenAPI spec contains hardcoded secret/API key in examples")
+                log_fail(logger, "OpenAPI spec contains hardcoded secret/API key in examples")
                 self.results.append(self._result(
                     url,
                     "OpenAPI exposure — potential secret/API key in spec example values",

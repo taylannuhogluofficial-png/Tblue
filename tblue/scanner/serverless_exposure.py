@@ -29,7 +29,7 @@ CWE-16: Configuration
 """
 
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from urllib.parse import urlparse, urljoin
 
 from tblue.scanner.base import BaseScanner

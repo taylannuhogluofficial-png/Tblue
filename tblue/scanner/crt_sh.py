@@ -8,8 +8,6 @@ brute-force because it includes historical infrastructure, shadow IT, and
 services that have been decommissioned but whose DNS still resolves.
 """
 
-import json
-import time
 from typing import List, Dict, Any, Set
 from urllib.parse import urlparse
 

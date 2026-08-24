@@ -1,5 +1,4 @@
 """Cache poisoning passive — unkeyed headers reflected, X-Forwarded-Host/Port, Vary analysis."""
-import re
 from urllib.parse import urlparse
 from .base import BaseScanner
 
@@ -28,8 +27,8 @@ def _check_host_header_reflected(http, url: str, origin: str) -> list:
                 "type": "cache_poisoning_host_reflected",
                 "status": "FAIL",
                 "url": url,
-                "detail": (f"X-Forwarded-Host value reflected in response body — "
-                           f"if cached, could poison cache with attacker-controlled host"),
+                "detail": ("X-Forwarded-Host value reflected in response body — "
+                           "if cached, could poison cache with attacker-controlled host"),
             })
         location = (resp.headers or {}).get("location", "")
         if probe in location:

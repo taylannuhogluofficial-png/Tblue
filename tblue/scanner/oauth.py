@@ -16,8 +16,8 @@ Paid equivalents: Burp Suite OAuth scanner extension, PortSwigger OAuth labs.
 """
 
 import re
-from typing import Any, Dict, List, Set
-from urllib.parse import urlparse, parse_qs, urljoin
+from typing import Any, Dict, List
+from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 
@@ -112,7 +112,6 @@ class OAuthScanner(BaseScanner):
         oauth_urls = [l for l in links if _CLIENT_ID_RE.search(l) or _OAUTH_URL_RE.search(l)]
         missing_state = [l for l in oauth_urls if not _STATE_PARAM_RE.search(l) and l]
         if missing_state and oauth_urls:
-            examples = missing_state[:3]
             log_warn(logger, f"OAuth state parameter missing in {len(missing_state)} links")
             self.results.append(self._result(
                 url, "OAuth — state parameter missing (CSRF risk)", "WARN",

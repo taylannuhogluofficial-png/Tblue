@@ -18,7 +18,7 @@ from urllib.parse import urlparse
 from bs4 import BeautifulSoup
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_warn, log_fail
+from tblue.logger import get_logger
 
 logger = get_logger(__name__)
 
@@ -82,8 +82,8 @@ class AccountTakeoverPassiveScanner(BaseScanner):
             if _ENUM_DIFF_RE.search(body):
                 self.results.append(self._result(
                     probe_url, "ato_username_enumeration_reset", "FAIL",
-                    detail=f"ATO: Password reset page reveals whether email/username exists "
-                           f"(pattern: user/email not found). Return the same message for "
+                    detail="ATO: Password reset page reveals whether email/username exists "
+                           "(pattern: user/email not found). Return the same message for "
                            "valid and invalid accounts to prevent enumeration."
                 ))
 

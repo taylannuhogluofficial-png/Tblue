@@ -21,12 +21,12 @@ CWE-829: Inclusion of Functionality from Untrusted Control Sphere
 import re
 import json
 from typing import Any, Dict, List
-from urllib.parse import urlparse, urljoin
+from urllib.parse import urlparse
 
 from bs4 import BeautifulSoup
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_fail, log_warn
+from tblue.logger import get_logger, log_pass, log_warn
 
 logger = get_logger(__name__)
 
@@ -110,7 +110,7 @@ class ServiceWorkerSecurityScanner(BaseScanner):
                 log_warn(logger, f"Service worker registered at root scope: {url}")
                 self.results.append(self._result(
                     url,
-                    f"Service worker — root scope '/' intercepts all requests",
+                    "Service worker — root scope '/' intercepts all requests",
                     "WARN",
                     detail=(
                         f"Service worker '{sw_url}' is registered with scope '/'. "

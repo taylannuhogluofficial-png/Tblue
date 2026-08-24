@@ -26,7 +26,7 @@ CWE-1004: Sensitive Cookie Without 'HttpOnly' Flag
 """
 
 import re
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Tuple
 from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner

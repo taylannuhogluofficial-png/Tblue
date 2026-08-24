@@ -28,11 +28,10 @@ CWE-200: Exposure of Sensitive Information
 
 import json
 import re
-from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse
+from typing import Any, Dict, List
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_fail, log_warn
+from tblue.logger import get_logger, log_pass, log_fail
 
 logger = get_logger(__name__)
 

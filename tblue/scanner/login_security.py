@@ -87,13 +87,13 @@ class LoginSecurityScanner(BaseScanner):
     def _check_https(self, url: str, form) -> None:
         action = form.attrs.get("action", "")
         if action.startswith("http://"):
-            log_fail(logger, f"Login form submits over HTTP")
+            log_fail(logger, "Login form submits over HTTP")
             self.results.append(self._result(
                 url, "Login — form submits over HTTP", "FAIL",
                 detail=f"Form action points to HTTP: {action}. Fix: use HTTPS in form action."
             ))
         elif not url.startswith("https://"):
-            log_fail(logger, f"Login page served over HTTP")
+            log_fail(logger, "Login page served over HTTP")
             self.results.append(self._result(
                 url, "Login — page served over HTTP", "FAIL",
                 detail="Login page served over HTTP. Fix: serve exclusively over HTTPS."

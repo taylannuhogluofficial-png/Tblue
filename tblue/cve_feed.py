@@ -31,8 +31,8 @@ import os
 import time
 import hashlib
 import re
-from typing import Any, Dict, List, Optional, Tuple
-from urllib.parse import urljoin, quote
+from typing import Any, Dict, List, Optional
+from urllib.parse import quote
 
 from tblue.logger import get_logger
 

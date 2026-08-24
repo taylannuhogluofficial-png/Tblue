@@ -46,7 +46,7 @@ References:
 """
 
 import re
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List
 
 from bs4 import BeautifulSoup
 

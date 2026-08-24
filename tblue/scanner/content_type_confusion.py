@@ -1,6 +1,5 @@
 """Content-Type confusion — MIME sniffing, JSON-as-HTML, JS-as-text/plain, SVG XSS vectors."""
 import re
-from urllib.parse import urlparse
 from .base import BaseScanner
 
 _JSON_CONTENT_TYPES = {"application/json", "application/ld+json", "application/problem+json"}

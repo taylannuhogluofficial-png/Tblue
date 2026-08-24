@@ -32,7 +32,6 @@ CWE-307: Improper Restriction of Excessive Authentication Attempts
 CWE-770: Allocation of Resources Without Limits or Throttling
 """
 
-import re
 from typing import Any, Dict, List, Optional
 from urllib.parse import urlparse, urljoin
 

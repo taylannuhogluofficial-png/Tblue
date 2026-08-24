@@ -35,7 +35,7 @@ CWE-79: Improper Neutralization (for reflected content path)
 """
 
 import re
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List
 from urllib.parse import urlparse, parse_qs, urlencode, urljoin
 
 from bs4 import BeautifulSoup

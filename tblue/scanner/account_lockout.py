@@ -34,10 +34,10 @@ CWE-308: Use of Single-factor Authentication
 
 import re
 from typing import Any, Dict, List, Optional
-from urllib.parse import urljoin, urlparse
+from urllib.parse import urlparse
 
 from tblue.scanner.base import BaseScanner
-from tblue.logger import get_logger, log_pass, log_fail, log_warn
+from tblue.logger import get_logger, log_pass, log_warn
 
 logger = get_logger(__name__)
 
@@ -211,7 +211,7 @@ class AccountLockoutScanner(BaseScanner):
             log_pass(logger, f"Account Lockout — brute force protection signals found: {signals_str}")
             self.results.append(self._result(
                 login_url,
-                f"Account Lockout — brute force protection detected",
+                "Account Lockout — brute force protection detected",
                 "PASS",
                 detail=(
                     f"Login endpoint: {login_url}\n"

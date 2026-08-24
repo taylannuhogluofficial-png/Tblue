@@ -30,7 +30,6 @@ CWE-539: Use of Persistent Cookies Containing Sensitive Information
 
 import re
 from typing import Any, Dict, List, Optional
-from urllib.parse import urlparse, parse_qs
 
 from tblue.scanner.base import BaseScanner
 from tblue.logger import get_logger, log_pass, log_warn, log_fail

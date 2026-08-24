@@ -202,7 +202,7 @@ class LinkSecurityScanner(BaseScanner):
 
         self.results.append(self._result(
             url,
-            f"Link security — target='_blank' links missing rel='noopener noreferrer' (reverse tabnabbing)",
+            "Link security — target='_blank' links missing rel='noopener noreferrer' (reverse tabnabbing)",
             severity,
             detail=detail,
         ))
