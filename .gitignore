@@ -1,0 +1,28 @@
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.egg
+*.egg-info/
+dist/
+build/
+.eggs/
+.env
+.venv
+env/
+venv/
+*.log
+.DS_Store
+# Coverage and test artifacts
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+# Report outputs (not source)
+tblue_report*.html
+tblue_report*.json
+.idea/
+.vscode/
+*.swp
+*.swo

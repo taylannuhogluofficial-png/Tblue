@@ -1,0 +1,13 @@
+.git
+.coverage
+.venv
+__pycache__
+*.pyc
+*.pyo
+tests/
+*.egg-info
+dist/
+build/
+.pytest_cache/
+tblue_dashboard.html
+/tmp/tblue_*
