@@ -9,10 +9,20 @@ Output formats: JSON (machine) and Markdown (human).
 """
 
 import json
+from dataclasses import asdict, is_dataclass
 from datetime import datetime, timezone
 from typing import Dict, List, Any
 
 from tblue import __version__
+
+
+def _score_json(scan_score):
+    """ScanScore is a dataclass — convert it before json.dump."""
+    if scan_score is None:
+        return None
+    if is_dataclass(scan_score) and not isinstance(scan_score, type):
+        return asdict(scan_score)
+    return scan_score
 
 # Maps finding types to STRIDE categories
 _STRIDE_MAP: Dict[str, List[str]] = {
@@ -174,7 +184,7 @@ def generate(target: str, all_results: Dict[str, List[Any]], output_path: str,
         "tool":      f"Tblue {__version__}",
         "target":    target,
         "generated": datetime.now(timezone.utc).isoformat(),
-        "score":     scan_score,
+        "score":     _score_json(scan_score),
         "threats": {
             _STRIDE_LABELS[c]: {
                 "description": _STRIDE_DESCRIPTIONS[c],
@@ -197,7 +207,10 @@ def generate(target: str, all_results: Dict[str, List[Any]], output_path: str,
         f.write(f"**Tool:** Tblue {__version__}  \n")
         f.write(f"**Generated:** {model['generated']}  \n")
         if scan_score is not None:
-            f.write(f"**Security Score:** {scan_score}  \n")
+            if is_dataclass(scan_score) and not isinstance(scan_score, type):
+                f.write(f"**Security Score:** {scan_score.score}/100 (grade {scan_score.grade})  \n")
+            else:
+                f.write(f"**Security Score:** {scan_score}  \n")
         f.write("\n---\n\n")
 
         for cat_code in "STRIDE":

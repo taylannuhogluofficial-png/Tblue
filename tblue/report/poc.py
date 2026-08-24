@@ -9,11 +9,21 @@ equivalent to what a browser normally sends.
 
 import json
 import shlex
+from dataclasses import asdict, is_dataclass
 from datetime import datetime, timezone
 from typing import Dict, List, Any
 from urllib.parse import urlparse
 
 from tblue import __version__
+
+
+def _score_json(scan_score):
+    """ScanScore is a dataclass — convert it before json.dump."""
+    if scan_score is None:
+        return None
+    if is_dataclass(scan_score) and not isinstance(scan_score, type):
+        return asdict(scan_score)
+    return scan_score
 
 # (finding_type_prefix, curl_template, description)
 # {url} = finding URL, {host} = hostname
@@ -258,7 +268,7 @@ def generate(target: str, all_results: Dict[str, List[Any]], output_path: str,
         "tool":      f"Tblue {__version__}",
         "target":    target,
         "generated": datetime.now(timezone.utc).isoformat(),
-        "score":     scan_score,
+        "score":     _score_json(scan_score),
         "poc_count": len(pocs),
         "pocs":      sorted(pocs, key=lambda x: {"FAIL": 0, "WARN": 1}.get(x["severity"], 2)),
     }

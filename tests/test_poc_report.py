@@ -3,6 +3,7 @@ import unittest
 import json
 import os
 import tempfile
+import shlex
 from tblue.report.poc import generate, _find_template
 
 
@@ -87,3 +88,49 @@ class TestPoCReport(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestPocScanScoreAndQuoting(unittest.TestCase):
+    """Regressions: ScanScore serialisation, and shell-safe PoC commands."""
+
+    def _findings(self, url="https://example.com"):
+        return {"headers": [{"type": "hsts_missing", "status": "FAIL",
+                             "url": url, "detail": "no HSTS"}]}
+
+    def test_generate_accepts_scanscore_dataclass(self):
+        from tblue.scoring import score_results
+        score = score_results(self._findings())
+        with tempfile.TemporaryDirectory() as d:
+            out = os.path.join(d, "p.json")
+            generate("https://example.com", self._findings(), out, scan_score=score)
+            with open(out) as f:
+                model = json.load(f)
+        self.assertIsInstance(model["score"], dict)
+        self.assertEqual(model["score"]["grade"], score.grade)
+
+    def test_int_score_still_supported(self):
+        with tempfile.TemporaryDirectory() as d:
+            out = os.path.join(d, "p.json")
+            generate("https://example.com", self._findings(), out, scan_score=72)
+            with open(out) as f:
+                self.assertEqual(json.load(f)["score"], 72)
+
+    def test_shell_metacharacters_in_url_are_quoted(self):
+        """A hostile target must not be able to inject shell commands into
+        a PoC the user copy-pastes."""
+        hostile = "https://evil.test/;touch /tmp/tblue_poc_rce;#"
+        with tempfile.TemporaryDirectory() as d:
+            out = os.path.join(d, "p.json")
+            generate(hostile, self._findings(hostile), out)
+            with open(out) as f:
+                pocs = json.load(f)["pocs"]
+        self.assertTrue(pocs)
+        for p in pocs:
+            cmd = p["poc_command"]
+            # Tokenise the way a shell would, treating ; | & as operators.
+            # If quoting works the hostile URL stays one word, so the
+            # injected `touch` can never surface as a bare command token.
+            lexer = shlex.shlex(cmd, posix=True, punctuation_chars=True)
+            lexer.whitespace_split = True
+            self.assertNotIn("touch", list(lexer),
+                             f"shell injection survived quoting: {cmd!r}")

@@ -72,3 +72,52 @@ class TestStrideReport(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestStrideScanScoreSerialisation(unittest.TestCase):
+    """Regression: the CLI passes a ScanScore dataclass, not an int.
+
+    The original tests passed scan_score=72, which json.dump handles fine,
+    so a raw dataclass in the payload crashed only in real runs:
+    TypeError: Object of type ScanScore is not JSON serializable
+    """
+
+    def _score(self):
+        from tblue.scoring import score_results
+        return score_results({"headers": [
+            {"type": "hsts_missing", "status": "FAIL", "url": "https://example.com", "detail": "no HSTS"},
+        ]})
+
+    def test_generate_accepts_scanscore_dataclass(self):
+        score = self._score()
+        with tempfile.TemporaryDirectory() as d:
+            out = os.path.join(d, "s.json")
+            generate("https://example.com",
+                     {"headers": [{"type": "xss", "status": "FAIL",
+                                   "url": "https://example.com", "detail": "x"}]},
+                     out, scan_score=score)
+            with open(out) as f:
+                model = json.load(f)
+        self.assertIsInstance(model["score"], dict)
+        self.assertEqual(model["score"]["grade"], score.grade)
+        self.assertEqual(model["score"]["score"], score.score)
+
+    def test_markdown_renders_score_not_repr(self):
+        score = self._score()
+        with tempfile.TemporaryDirectory() as d:
+            out = os.path.join(d, "s.json")
+            generate("https://example.com",
+                     {"headers": [{"type": "xss", "status": "FAIL",
+                                   "url": "https://example.com", "detail": "x"}]},
+                     out, scan_score=score)
+            with open(out.replace(".json", ".md")) as f:
+                md = f.read()
+        self.assertIn(f"{score.score}/100", md)
+        self.assertNotIn("ScanScore(", md)
+
+    def test_int_score_still_supported(self):
+        with tempfile.TemporaryDirectory() as d:
+            out = os.path.join(d, "s.json")
+            generate("https://example.com", {"headers": []}, out, scan_score=72)
+            with open(out) as f:
+                self.assertEqual(json.load(f)["score"], 72)
