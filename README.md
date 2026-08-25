@@ -1,11 +1,3 @@
-> ### ⚠️ If you ran an authenticated scan before 2.0.1, rotate those credentials
->
-> 1.0.0 and 1.0.1 attached `--cookie` / `--header` / `--bearer` / `--auth` values to a
-> shared HTTP session that also reached third-party lookup services, so those services
-> received them. 2.0.0 fixed that but still let `--header` values and the cookie jar
-> follow a redirect off the target host. **Use 2.0.1**, and if you ran an
-> authenticated scan on any earlier release, rotate what you passed it.
-> The [changelog](CHANGELOG.md) has the detail.
 
 <div align="center">
 
@@ -509,6 +501,15 @@ It flags things that look wrong based on known security standards. It does not v
 Treat findings as a starting point for your security review, not a final verdict. Validate critical issues manually before reporting them as confirmed vulnerabilities.
 
 ---
+> ### ⚠️ If you ran an authenticated scan before 2.0.1, rotate those credentials
+>
+> 1.0.0 and 1.0.1 attached `--cookie` / `--header` / `--bearer` / `--auth` values to a
+> shared HTTP session that also reached third-party lookup services, so those services
+> received them. 2.0.0 fixed that but still let `--header` values and the cookie jar
+> follow a redirect off the target host. **Use 2.0.1**, and if you ran an
+> authenticated scan on any earlier release, rotate what you passed it.
+> The [changelog](CHANGELOG.md) has the detail.
+
 
 ## License
 
