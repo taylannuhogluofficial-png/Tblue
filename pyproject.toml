@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tblue"
-version = "2.0.0"
+version = "2.0.1"
 description = "Open source passive blue-team security scanner for website owners"
 readme = "README.md"
 license = { text = "MIT" }

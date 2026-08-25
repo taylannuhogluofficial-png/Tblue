@@ -13,6 +13,7 @@ from urllib.parse import urlparse
 
 from tblue import __version__
 from tblue.constants import DEFAULT_DEPTH, DEFAULT_USER_AGENT, DEFAULT_TIMEOUT, DEFAULT_RETRIES
+from tblue.http import ScopedSession
 from tblue.config import load as load_config, apply as apply_config
 from tblue.scanner.xss             import XSSScanner
 from tblue.scanner.headers         import HeaderScanner
@@ -718,7 +719,7 @@ from tblue.report import sigma as sigma_report
 from tblue.report import splunk_spl as splunk_report
 from tblue.report import kql as sentinel_report
 from tblue.remediation import generate_playbooks, format_terminal as fmt_playbook_term, format_markdown as fmt_playbook_md
-from tblue.scoring import score_results
+from tblue.scoring import score_results, SEVERITY_ORDER
 from tblue.history import save_snapshot, load_previous_snapshot, compute_diff, load_score_history
 from tblue.logger import get_logger, set_level, log_head, log_warn
 from tblue.ai_analysis import analyze_with_ai, format_ai_analysis_terminal
@@ -1977,8 +1978,12 @@ EXIT_ERROR            = 2
 
 
 def build_session(args=None) -> requests.Session:
-    """Build a requests.Session, optionally applying authentication from CLI args."""
-    session = requests.Session()
+    """Build a session, optionally applying authentication from CLI args.
+
+    Returns a ScopedSession so that anything applied here is stripped again
+    if a redirect carries the request off the target host.
+    """
+    session = ScopedSession()
     session.headers.update({"User-Agent": DEFAULT_USER_AGENT})
 
     if args is None:
@@ -1997,10 +2002,12 @@ def build_session(args=None) -> requests.Session:
         if ":" in h:
             name, _, value = h.partition(":")
             session.headers[name.strip()] = value.strip()
+            session.scoped_headers.add(name.strip())
 
     # Bearer token: Authorization: Bearer <token>
     if getattr(args, "bearer", None):
         session.headers["Authorization"] = f"Bearer {args.bearer}"
+        session.scoped_headers.add("Authorization")
 
     # HTTP Basic auth: "user:pass"
     if getattr(args, "auth_basic", None) and ":" in args.auth_basic:
@@ -2008,6 +2015,19 @@ def build_session(args=None) -> requests.Session:
         session.auth = (user, pwd)
 
     return session
+
+
+def severities_at_or_above(scan_score, floor: str) -> Dict[str, int]:
+    """Severity counts at or above `floor`, worst first, zero counts dropped.
+
+    A score gate alone lets a genuinely broken site through: a page missing
+    Content-Security-Policy entirely still scores in the 80s once everything
+    else passes. This gates on the findings themselves.
+    """
+    ranked = SEVERITY_ORDER[:SEVERITY_ORDER.index(floor) + 1]
+    return {sev: scan_score.breakdown.get(sev, 0)
+            for sev in ranked
+            if scan_score.breakdown.get(sev, 0) > 0}
 
 
 def gated_selection(only: str) -> Dict[str, List[str]]:
@@ -2144,6 +2164,12 @@ Examples:
     parser.add_argument("--no-history",         action="store_true",                help="Skip saving/comparing scan history")
     parser.add_argument("--fail-below",         type=int, default=None, metavar="N",
                         help="Exit code 1 if score < N (CI/CD gate). Range: 0-100.")
+    parser.add_argument("--fail-on",            default=None, metavar="SEVERITY",
+                        choices=["critical", "high", "medium", "low"],
+                        help="Exit code 1 if any finding is at or above SEVERITY "
+                             "(critical|high|medium|low). Catches a missing CSP or HSTS "
+                             "that an aggregate score would still let through. "
+                             "Combine with --fail-below; either one failing fails the build.")
     parser.add_argument("--config",             default=None, metavar="PATH",
                         help="Path to .tblue.toml config file (default: .tblue.toml in cwd)")
     parser.add_argument("--ai-key",             default=None, metavar="KEY",
@@ -2505,6 +2531,12 @@ def _run_scan(parser, args, target: str) -> None:
     if args.fail_below is not None:
         term.print_ci_gate(scan_score, args.fail_below)
         if scan_score.score < args.fail_below:
+            exit_code = EXIT_BELOW_THRESHOLD
+
+    if args.fail_on is not None:
+        offending = severities_at_or_above(scan_score, args.fail_on)
+        term.print_severity_gate(scan_score, args.fail_on, offending)
+        if offending:
             exit_code = EXIT_BELOW_THRESHOLD
 
     # ── Reports ────────────────────────────────────────────────────────────

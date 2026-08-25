@@ -323,6 +323,37 @@ def print_trend(scan_diff: "ScanDiff") -> None:
 
 # ── CI Gate ───────────────────────────────────────────────────────────────────
 
+def print_severity_gate(scan_score: "ScanScore", floor: str, offending: dict) -> None:
+    """Render the --fail-on gate: which severities tripped it, and why."""
+    from tblue.scoring import SEVERITY_LABELS
+
+    passed = not offending
+    w      = _tw()
+    bc     = GREEN if passed else RED
+
+    print(_box_top(w, bc))
+    print(_box_row(_center(f"{BOLD}Severity Gate{RESET}", w), w, bc))
+    print(_box_mid(w, bc))
+    print(_box_row(f"  {_DIM}Fail on{RESET}  {SEVERITY_LABELS.get(floor, floor)} or worse", w, bc))
+    print(_box_mid(w, bc))
+
+    if passed:
+        print(_box_row(
+            f"  {GREEN}{BOLD}\u2714  PASSED{RESET}  \u2014  nothing at {floor} or above   exit 0", w, bc))
+    else:
+        for sev, count in offending.items():
+            color = _SEV_COLOR.get(sev, RESET)
+            label = SEVERITY_LABELS.get(sev, sev)
+            print(_box_row(f"    {color}\u25cf{RESET} {label:<14} {count}", w, bc))
+        total = sum(offending.values())
+        print(_box_mid(w, bc))
+        print(_box_row(
+            f"  {RED}{BOLD}\u2716  FAILED{RESET}  \u2014  {total} finding(s) at {floor} or above   exit 1", w, bc))
+
+    print(_box_bot(w, bc))
+    print()
+
+
 def print_ci_gate(scan_score: "ScanScore", threshold: int) -> None:
     score  = scan_score.score
     grade  = scan_score.grade

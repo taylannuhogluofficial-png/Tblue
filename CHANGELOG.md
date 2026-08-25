@@ -2,6 +2,39 @@
 
 All notable changes to Tblue are documented here.
 
+## [2.0.1] — 2026-08-25
+
+### Security
+
+- **Credentials no longer survive a redirect off the target.** 2.0.0 scoped
+  credentials by picking a clean session per request, which covers requests
+  Tblue issues itself but not redirects: `requests` follows those inside a
+  single `send()`, on whichever session started the call. A target answering
+  302 with an off-host `Location` therefore handed that host the `--header`
+  values and the cookie jar. `--bearer` and `--auth` were already safe —
+  `requests`' own `rebuild_auth` drops `Authorization` when the netloc changes,
+  but it does not touch arbitrary headers, and a cookie set without an explicit
+  domain matches any host.
+
+  `ScopedSession` now strips user-supplied headers and `Cookie` when a redirect
+  leaves the target host or its subdomains. `tests/test_redirect_scoping.py`
+  covers the leak, the in-scope case that must keep working, and the
+  no-target-declared case.
+
+### Added
+
+- **`--fail-on SEVERITY`** — fail the build when any finding is at or above
+  `critical` / `high` / `medium` / `low`. `--fail-below` gates on the aggregate
+  score, which lets a genuinely broken site through: a page missing
+  Content-Security-Policy entirely still scores in the 80s once its other checks
+  pass, so `--fail-below 80` exits 0 while the header is absent. `--fail-on high`
+  exits 1. The two gates are independent; either failing fails the build.
+- **A composite GitHub Action.** `uses: taylannuhogluofficial-png/Tblue@v2` with
+  a `url` and a `fail-on`, rather than hand-rolling setup-python and pip steps.
+  Inputs for depth, module selection, SARIF output and pinning a version. The
+  README documents wiring the SARIF file into the Security tab so findings land
+  as annotations on the PR diff.
+
 ## [2.0.0] — 2026-08-24
 
 Security and correctness release. Default scan behaviour changes, hence the

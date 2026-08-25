@@ -22,6 +22,46 @@ if TYPE_CHECKING:
 logger = get_logger(__name__)
 
 
+def _host_in_scope(url: str, allowed_host: Optional[str]) -> bool:
+    """True when url points at allowed_host (or a subdomain of it)."""
+    if not allowed_host:
+        return True
+    host = (urlparse(url).hostname or "").lower()
+    if not host:
+        return True
+    return host == allowed_host or host.endswith("." + allowed_host)
+
+
+class ScopedSession(Session):
+    """A Session that drops user-supplied credentials when a redirect
+    leaves the scan target.
+
+    Picking a clean session per request (HTTPClient._request) only covers
+    requests we issue ourselves. A redirect is followed by requests inside
+    a single send(), using whichever session started it — so a target that
+    answers 302 with an off-host Location would otherwise carry --header
+    values and the cookie jar to that host.
+
+    requests' own rebuild_auth drops Authorization on a host change, which
+    covers --bearer and --auth. It does not touch arbitrary headers, and a
+    cookie set without an explicit domain matches any host, so --cookie
+    travels too. Both are stripped here.
+    """
+
+    def __init__(self) -> None:
+        super().__init__()
+        self.allowed_host: Optional[str] = None
+        self.scoped_headers: set = set()
+
+    def rebuild_auth(self, prepared_request, response):
+        super().rebuild_auth(prepared_request, response)
+        if _host_in_scope(prepared_request.url, self.allowed_host):
+            return
+        for name in self.scoped_headers:
+            prepared_request.headers.pop(name, None)
+        prepared_request.headers.pop("Cookie", None)
+
+
 class HTTPClient:
     """
     HTTP client with retry, exponential backoff, rate limiting, and
@@ -53,18 +93,17 @@ class HTTPClient:
         # Host the user authorised us to talk to. Requests to anything else
         # (crt.sh, OSV, OTX, ...) must never carry their credentials.
         self.allowed_host = (allowed_host or "").lower().lstrip(".") or None
+        # A ScopedSession also needs the target, to strip credentials off
+        # redirects that leave it (see ScopedSession.rebuild_auth).
+        if isinstance(session, ScopedSession):
+            session.allowed_host = self.allowed_host
         self._offsite_session: Optional[Session] = None
         self._last_request_time: float = 0.0
 
     # ── Credential scoping ────────────────────────────────────────────────
     def _in_scope(self, url: str) -> bool:
         """True when url points at the scan target (or a subdomain of it)."""
-        if not self.allowed_host:
-            return True
-        host = (urlparse(url).hostname or "").lower()
-        if not host:
-            return True
-        return host == self.allowed_host or host.endswith("." + self.allowed_host)
+        return _host_in_scope(url, self.allowed_host)
 
     def _clean_session(self) -> Session:
         """A session with no cookies, no auth and no user-supplied headers.

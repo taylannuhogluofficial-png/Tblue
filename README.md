@@ -24,7 +24,7 @@
 [![Scanners](https://img.shields.io/badge/scanners-614-cyan?style=flat-square)](#what-it-checks)
 [![MCP Ready](https://img.shields.io/badge/MCP-ready-purple?style=flat-square)](#use-as-an-ai-plugin-mcp)
 [![PyPI](https://img.shields.io/pypi/v/tblue?style=flat-square&color=blue)](https://pypi.org/project/tblue/)
-[![Tests](https://img.shields.io/badge/tests-6730%20passing-brightgreen?style=flat-square)](#)
+[![Tests](https://img.shields.io/badge/tests-6741%20passing-brightgreen?style=flat-square)](#)
 
 </div>
 
@@ -46,7 +46,7 @@ Scanners are split by what they actually send, measured rather than assumed:
 
 `--active` implies `--probe`. The intrusive tier can lock accounts out, send password-reset emails to real people, create records, and trip WAFs — only use it on systems you own.
 
-**What leaves your machine.** Findings are never uploaded. Some scanners look your target up in public intelligence sources (certificate transparency via crt.sh, and vulnerability data from OSV and NVD), which necessarily discloses the domain or version being checked to those services. Credentials you pass with `--bearer`, `--auth`, `--cookie`, or `--header` are sent **only** to the target host and its subdomains, never to those third parties; this is enforced in `HTTPClient` and covered by tests. One gap remains: if the target itself redirects to another host, a value passed with `--header` follows the redirect (`--bearer` and `--auth` are stripped by `requests`). Avoid `--header` on targets you do not control — tracked for 2.0.1. Run with `--skip` on the enrichment modules for a fully offline scan. AI analysis is opt-in and transmits nothing unless you pass `--ai` or `--ai-key`.
+**What leaves your machine.** Findings are never uploaded. Some scanners look your target up in public intelligence sources (certificate transparency via crt.sh, and vulnerability data from OSV and NVD), which necessarily discloses the domain or version being checked to those services. Credentials you pass with `--bearer`, `--auth`, `--cookie`, or `--header` are sent **only** to the target host and its subdomains, never to those third parties; this is enforced in `HTTPClient` and covered by tests. This holds across redirects too: if the target redirects to another host, user-supplied headers and the cookie jar are stripped before the request leaves (2.0.1 — in 2.0.0 they followed the redirect). Run with `--skip` on the enrichment modules for a fully offline scan. AI analysis is opt-in and transmits nothing unless you pass `--ai` or `--ai-key`.
 
 ---
 
@@ -239,8 +239,6 @@ tblue -u https://yoursite.com --only soc2_compliance,iso27001_compliance
 
 ## Use in CI / GitHub Actions
 
-Gate your pipeline on security score. The scan fails the build if the score drops below your threshold:
-
 ```yaml
 # .github/workflows/security.yml
 name: Security scan
@@ -254,20 +252,88 @@ jobs:
   tblue:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: taylannuhogluofficial-png/Tblue@v2
         with:
-          python-version: "3.12"
-      - run: pip install tblue
-      - run: tblue -u https://yoursite.com --fail-below 80 -o tblue-report.html
-      - uses: actions/upload-artifact@v4
-        if: always()
-        with:
-          name: tblue-report
-          path: tblue-report.html
+          url: https://yoursite.com
+          fail-on: high
 ```
 
-`--fail-below 80` exits with code 1 if the score is under 80, failing the job. Remove it to always pass (report only).
+That fails the PR on any finding of high severity or worse — a missing
+Content-Security-Policy, no HSTS, no framing protection.
+
+### Gate on findings, not just the score
+
+There are two independent gates, and either one failing fails the build.
+
+| Flag | Fails when | Use it to |
+|---|---|---|
+| `--fail-on SEVERITY` | any finding is at or above `critical` / `high` / `medium` / `low` | block a specific class of misconfiguration |
+| `--fail-below N` | the 0-100 score drops under `N` | stop overall regression |
+
+Reach for `--fail-on` when a specific misconfiguration must never merge. A
+score threshold alone will not catch one: a site missing CSP entirely still
+scores in the 80s once its other checks pass, so `--fail-below 80` returns 0
+while the header is absent. `--fail-on high` returns 1.
+
+```bash
+# Block the merge on any high-severity finding
+tblue -u https://yoursite.com --fail-on high
+
+# Both gates at once
+tblue -u https://yoursite.com --fail-on critical --fail-below 85
+```
+
+Exit codes: `0` clean, `1` a gate tripped, `2` scan error.
+
+### Action inputs
+
+| Input | Default | Description |
+|---|---|---|
+| `url` | *(required)* | Target URL. Must be a site you own. |
+| `fail-on` | `high` | Fail at or above this severity. Empty disables. |
+| `fail-below` | *(empty)* | Fail under this score. Empty disables. |
+| `depth` | `2` | Crawl depth. |
+| `only` / `skip` | *(empty)* | Comma-separated module lists. |
+| `sarif` | `false` | Also write `results.sarif`. |
+| `report` | `tblue-report.html` | HTML report path. |
+| `version` | `latest` | Tblue version to install. |
+
+### Results in the Security tab
+
+Set `sarif: true` and hand the file to CodeQL's uploader. Findings then appear
+as annotations on the PR diff:
+
+```yaml
+jobs:
+  tblue:
+    runs-on: ubuntu-latest
+    permissions:
+      security-events: write
+    steps:
+      - uses: taylannuhogluofficial-png/Tblue@v2
+        id: scan
+        continue-on-error: true
+        with:
+          url: https://yoursite.com
+          fail-on: high
+          sarif: true
+
+      - uses: github/codeql-action/upload-sarif@v3
+        if: always()
+        with:
+          sarif_file: results.sarif
+
+      - name: Enforce the gate
+        if: steps.scan.outcome == 'failure'
+        run: exit 1
+```
+
+`continue-on-error` lets the SARIF upload run even when the gate trips, so the
+findings are visible on the PR that failed; the last step then fails the job.
+
+Scanning a URL requires the site to be reachable from the runner. For a
+preview deployment, pass its URL — Vercel, Netlify and Cloud Run all expose one
+as a step output.
 
 ---
 

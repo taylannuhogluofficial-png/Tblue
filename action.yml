@@ -1,0 +1,101 @@
+name: 'Tblue security scan'
+description: 'Passive blue-team scan of a URL. Fails the build on header misconfigurations or a score drop.'
+author: 'Taylan Nuhoğlu'
+
+branding:
+  icon: 'shield'
+  color: 'blue'
+
+inputs:
+  url:
+    description: 'Target URL to scan. Must be a site you own.'
+    required: true
+  fail-on:
+    description: >-
+      Fail the build if any finding is at or above this severity
+      (critical | high | medium | low). Gates on the findings themselves, so a
+      missing CSP or HSTS fails even when the aggregate score looks healthy.
+      Leave empty to not gate on severity.
+    required: false
+    default: 'high'
+  fail-below:
+    description: >-
+      Fail the build if the score drops below this number (0-100). Leave empty
+      to not gate on score. Independent of fail-on — either failing fails the build.
+    required: false
+    default: ''
+  depth:
+    description: 'Crawl depth.'
+    required: false
+    default: '2'
+  only:
+    description: 'Comma-separated module list. Empty runs all 582 passive modules.'
+    required: false
+    default: ''
+  skip:
+    description: 'Comma-separated modules to skip.'
+    required: false
+    default: ''
+  sarif:
+    description: >-
+      Write results.sarif for upload to the GitHub Security tab. Pair with
+      github/codeql-action/upload-sarif (needs permissions: security-events: write).
+    required: false
+    default: 'false'
+  report:
+    description: 'Path for the HTML report.'
+    required: false
+    default: 'tblue-report.html'
+  version:
+    description: 'Tblue version to install. "latest" tracks the newest release.'
+    required: false
+    default: 'latest'
+  python-version:
+    description: 'Python used to run the scan.'
+    required: false
+    default: '3.12'
+
+outputs:
+  exit-code:
+    description: 'Tblue exit code — 0 clean, 1 a gate tripped, 2 scan error.'
+    value: ${{ steps.scan.outputs.exit-code }}
+  report:
+    description: 'Path to the generated HTML report.'
+    value: ${{ inputs.report }}
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: ${{ inputs.python-version }}
+
+    - name: Install Tblue
+      shell: bash
+      run: |
+        if [ "${{ inputs.version }}" = "latest" ]; then
+          python -m pip install --upgrade tblue
+        else
+          python -m pip install "tblue==${{ inputs.version }}"
+        fi
+
+    - name: Scan
+      id: scan
+      shell: bash
+      run: |
+        args=(-u "${{ inputs.url }}" -d "${{ inputs.depth }}" -o "${{ inputs.report }}")
+        # if-blocks, not `[ ... ] && args+=(...)`: an AND-list that ends up last
+        # under `set -e` would abort the step when the input is empty.
+        if [ -n "${{ inputs.fail-on }}" ];    then args+=(--fail-on "${{ inputs.fail-on }}");       fi
+        if [ -n "${{ inputs.fail-below }}" ]; then args+=(--fail-below "${{ inputs.fail-below }}"); fi
+        if [ -n "${{ inputs.only }}" ];       then args+=(--only "${{ inputs.only }}");             fi
+        if [ -n "${{ inputs.skip }}" ];       then args+=(--skip "${{ inputs.skip }}");             fi
+        if [ "${{ inputs.sarif }}" = "true" ]; then args+=(--sarif);                                fi
+
+        set +e
+        tblue "${args[@]}"
+        code=$?
+        set -e
+        echo "exit-code=$code" >> "$GITHUB_OUTPUT"
+        exit $code

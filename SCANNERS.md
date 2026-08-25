@@ -1,6 +1,6 @@
 # Tblue Scanner Reference
 
-In-depth reference for **405 of the 614 passive blue-team scanners** in Tblue. The remaining 209 ship and run, but do not yet have a long-form entry here — see `tblue --help` for the full module list.
+In-depth reference for **405 of Tblue's 614 scanners** (582 passive, plus 32 gated behind `--probe` / `--active`). The remaining 209 ship and run, but do not yet have a long-form entry here — see `tblue --help` for the full module list.
 Each entry explains what the scanner detects, why it is dangerous, and how to fix it.
 
 > **Blue-team only.** Tblue is a passive detection tool — no active exploitation, no brute force,
