@@ -4,10 +4,10 @@ from unittest.mock import MagicMock, patch
 URL = "https://example.com"
 
 
-class TestXXEPassiveScanner:
+class TestXXEProbeScanner:
     def _scanner(self):
-        from tblue.scanner.xxe_passive import XXEPassiveScanner
-        return XXEPassiveScanner(MagicMock())
+        from tblue.scanner.xxe_probe import XXEProbeScanner
+        return XXEProbeScanner(MagicMock())
 
     def _resp(self, body="OK", status=200, headers=None):
         r = MagicMock()
@@ -30,19 +30,19 @@ class TestXXEPassiveScanner:
         assert any(r["status"] == "PASS" for r in results)
 
     def test_external_entity_in_xml_fails(self):
-        from tblue.scanner.xxe_passive import _check_xml_response_for_xxe
+        from tblue.scanner.xxe_probe import _check_xml_response_for_xxe
         body = '<?xml version="1.0"?><!ENTITY foo SYSTEM "file:///etc/passwd"><root/>'
         findings = _check_xml_response_for_xxe(body, "application/xml", URL)
         assert any("external_entity" in f["type"] for f in findings)
 
     def test_dtd_only_warns(self):
-        from tblue.scanner.xxe_passive import _check_xml_response_for_xxe
+        from tblue.scanner.xxe_probe import _check_xml_response_for_xxe
         body = '<?xml version="1.0"?><!DOCTYPE root PUBLIC "-//W3C//DTD..." "http://example.com/dtd"><root/>'
         findings = _check_xml_response_for_xxe(body, "application/xml", URL)
         assert any("dtd" in f["type"] for f in findings)
 
     def test_entity_reflected_fails(self):
-        from tblue.scanner.xxe_passive import _check_xml_endpoint_accepts_dtd
+        from tblue.scanner.xxe_probe import _check_xml_endpoint_accepts_dtd
         http = MagicMock()
         r = MagicMock()
         r.status_code = 200
@@ -52,7 +52,7 @@ class TestXXEPassiveScanner:
         assert any("reflected" in f["type"] for f in findings)
 
     def test_clean_xml_passes(self):
-        from tblue.scanner.xxe_passive import _check_xml_response_for_xxe
+        from tblue.scanner.xxe_probe import _check_xml_response_for_xxe
         findings = _check_xml_response_for_xxe("<root><item>hello</item></root>", "application/xml", URL)
         assert findings == []
 

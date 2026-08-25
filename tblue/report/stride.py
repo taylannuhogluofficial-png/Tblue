@@ -40,7 +40,7 @@ _STRIDE_MAP: Dict[str, List[str]] = {
     ],
     # Tampering — attacker modifies data or code
     "T": [
-        "sql_error_passive", "command_injection", "xxe_injection", "xxe_passive",
+        "sql_error_passive", "command_injection", "xxe_injection", "xxe_probe",
         "xml_xxe", "ssti", "csti", "el_injection", "ldap_injection",
         "ldap_injection_passive", "nosql_injection", "nosql_injection_advanced",
         "path_traversal", "path_traversal_deep", "file_inclusion",
@@ -58,7 +58,7 @@ _STRIDE_MAP: Dict[str, List[str]] = {
     ],
     # Repudiation — attacker denies an action occurred
     "R": [
-        "log_injection", "log_injection_passive", "audit_log",
+        "log_injection", "log_injection_probe", "audit_log",
         "security_txt", "security_txt_deep", "nel_reporting",
         "reporting_api_security",
     ],

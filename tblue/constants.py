@@ -4,7 +4,11 @@ Shared constants across all Tblue modules.
 
 from typing import Dict
 
-VERSION: str = "1.0.0"
+from tblue import __version__
+
+# Single source of truth is tblue/__init__.py. Kept as an alias so the two can
+# never drift again — constants.py said 1.0.0 through the whole 1.0.1 release.
+VERSION: str = __version__
 
 TEST_MARKER: str = "xssreflectcheck1337"
 
@@ -25,7 +29,7 @@ BOLD:   str = "\033[1m"
 RESET:  str = "\033[0m"
 
 DEFAULT_USER_AGENT: str = (
-    "Tblue/1.0.0 (self-audit; https://github.com/taylannuhogluofficial-png/Tblue)"
+    f"Tblue/{VERSION} (self-audit; https://github.com/taylannuhogluofficial-png/Tblue)"
 )
 DEFAULT_TIMEOUT:    int = 8
 DEFAULT_DEPTH:      int = 3

@@ -1,0 +1,37 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev]"
+
+      - name: Run tests
+        run: pytest tests/ -q --tb=short
+
+      - name: Verify default scan is passive
+        run: pytest tests/test_passive_by_default.py -q --tb=short
+
+      - name: Verify credentials never leave the target host
+        run: pytest tests/test_credential_scoping.py -q --tb=short
+
+      - name: Verify ATT&CK mappings
+        run: pytest tests/test_mitre_catalogue.py -q --tb=short

@@ -1,21 +1,23 @@
-> ## 🔧 In maintenance — a quick heads-up before you scan
+> ## ⚠️ If you ran 1.0.0 or 1.0.1, rotate your credentials
 >
-> Thanks for checking out Tblue! An external review turned up some real issues,
-> and I'd rather be upfront about them than stay quiet while I fix things.
+> An external review found real problems in those releases. Both are yanked
+> from PyPI and **2.0.0 fixes all of them**, but one needs action from you:
 >
-> Parts of this README promise more than the code currently delivers. I'm
-> rewriting both to match. Until that lands:
+> - **Authenticated scans leaked credentials.** Values passed with `--cookie`,
+>   `--header`, `--bearer` or `--auth` were attached to a shared HTTP session
+>   that also contacted third-party lookup services (crt.sh, OSV, NVD,
+>   AlienVault OTX), so those services received them. If you ran an
+>   authenticated scan on 1.0.0 or 1.0.1, **rotate those credentials.** Sorry.
+> - **The default scan was not passive.** It port-scanned, submitted logins and
+>   password resets, and sent XXE and traversal payloads. In 2.0.0 the default
+>   is measured read-only and enforced by a test; everything that sends
+>   uninvited traffic now sits behind `--probe` or `--active`.
+> - **Generated PoC commands were not shell-quoted**, so copying one from a
+>   report of a hostile target could execute shell metacharacters.
 >
-> - **Please skip `--cookie`, `--header`, `--bearer` and `--auth` for now.**
->   Those values currently get passed along to third-party lookup services.
->   If you've already run an authenticated scan on 1.0.0 or 1.0.1, please
->   rotate those credentials — sorry about that one.
-> - **The default scan does more probing than the docs suggest.** Point it at
->   a staging site rather than production for now.
-> - **The PyPI releases are yanked on purpose** — not a mistake, just keeping
->   the broken build out of people's hands until the fix ships.
->
-> Fixes are in progress. Issues and PRs very welcome if you spot anything else.<div align="center">
+> Full detail is in the [changelog](CHANGELOG.md). Issues and PRs welcome.
+
+<div align="center">
 
 ```
 ████████╗ ██████╗  ██╗      ██╗   ██╗ ███████╗
@@ -26,14 +28,14 @@
    ╚═╝    ╚═════╝  ╚══════╝  ╚═════╝  ╚══════╝
 ```
 
-**614 passive blue-team security scanners. Runs on your machine. No accounts. No data sent anywhere.**
+**582 passive blue-team security scanners, plus 32 opt-in probes. Runs on your machine. No accounts. No telemetry.**
 
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue?style=flat-square)](https://www.python.org/)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green?style=flat-square)](LICENSE)
 [![Scanners](https://img.shields.io/badge/scanners-614-cyan?style=flat-square)](#what-it-checks)
 [![MCP Ready](https://img.shields.io/badge/MCP-ready-purple?style=flat-square)](#use-as-an-ai-plugin-mcp)
 [![PyPI](https://img.shields.io/pypi/v/tblue?style=flat-square&color=blue)](https://pypi.org/project/tblue/)
-[![Tests](https://img.shields.io/badge/tests-6692%20passing-brightgreen?style=flat-square)](#)
+[![Tests](https://img.shields.io/badge/tests-6720%20passing-brightgreen?style=flat-square)](#)
 
 </div>
 
@@ -41,7 +43,21 @@
 
 Tblue is a free, open-source security scanner for website owners. You point it at your site and it tells you what looks wrong — no security background required. It runs completely on your machine, sends no data to third parties, and requires no account or API key.
 
-**It is blue-team only.** Every scanner reads HTTP responses, headers, cookies, JavaScript files, and page content. Nothing is modified. Nothing is brute-forced. No credentials are ever tested against your application.
+**It is blue-team only.** The 582 default scanners read HTTP responses, headers, cookies, JavaScript files, and page content. Nothing is modified and no credentials are ever brute-forced against your application.
+
+A default scan is read-only, and that is enforced rather than asserted. Every scanner is run against an instrumented server in CI; any that issues a POST/PUT/PATCH/DELETE, or a GET carrying a traversal, XXE, CRLF or injection payload, fails the build until it is moved out of the default tier. A measured depth-1 run against a live site issues 1218 GET requests and a single CORS preflight, with zero request bodies and zero attack payloads.
+
+Scanners are split by what they actually send, measured rather than assumed:
+
+| Tier | Flag | Scanners | Sends |
+|---|---|---|---|
+| Passive | *(default)* | 582 | GET/HEAD only. Safe to run against production. |
+| Probe | `--probe` | 12 | Crafted but side-effect-free: GraphQL introspection, CORS origin reflection, TLS cipher negotiation, DNS enumeration. Modifies nothing. |
+| Intrusive | `--active` | 20 | Authentication attempts, password-reset and registration submissions, injection payloads, port scans. |
+
+`--active` implies `--probe`. The intrusive tier can lock accounts out, send password-reset emails to real people, create records, and trip WAFs — only use it on systems you own.
+
+**What leaves your machine.** Findings are never uploaded. Some scanners look your target up in public intelligence sources (certificate transparency via crt.sh, and vulnerability data from OSV and NVD), which necessarily discloses the domain or version being checked to those services. Credentials you pass with `--bearer`, `--auth`, `--cookie`, or `--header` are sent **only** to the target host and its subdomains, never to those third parties; this is enforced in `HTTPClient` and covered by tests. Run with `--skip` on the enrichment modules for a fully offline scan. AI analysis is opt-in and transmits nothing unless you pass `--ai` or `--ai-key`.
 
 ---
 
@@ -52,7 +68,7 @@ Tblue is a free, open-source security scanner for website owners. You point it a
 ```
 $ tblue -u https://example.com
 
-  Scanning https://example.com — 614 modules · 50 workers · depth 3
+  Scanning https://example.com — 582 passive modules · 50 workers · depth 3
   ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
   [FAIL] hsts_missing          HSTS not set — site reachable over plain HTTP
@@ -92,7 +108,7 @@ Most security scanners are built for attackers — they try to exploit things. T
 
 ## What it checks
 
-614 modules run in parallel. Every scan covers all of these:
+582 passive modules run in parallel on every scan. A further 32 are opt-in (`--probe` / `--active`). Categories below cover all 614:
 
 | Category | What it looks for |
 |---|---|
@@ -146,8 +162,18 @@ docker run --rm tblue -u https://yoursite.com
 ## Quick start
 
 ```bash
-# Full scan — all 614 modules, 50 parallel workers
+# Passive scan — 582 read-only modules, 50 parallel workers.
+# Sends GET requests only. Safe against production.
 tblue -u https://yoursite.com
+
+# Add the 12 side-effect-free probes (GraphQL introspection, CORS
+# reflection, TLS ciphers, DNS enumeration). Still modifies nothing.
+tblue -u https://yoursite.com --probe
+
+# Add the 20 intrusive checks: authentication attempts, password-reset and
+# registration submissions, injection payloads, port scans. These can lock
+# accounts out and email real users — only on systems you own.
+tblue -u https://yoursite.com --active
 
 # Save an HTML report with remediation guidance for every finding
 tblue -u https://yoursite.com -o report.html
@@ -166,7 +192,11 @@ tblue -u https://yoursite.com --sigma           # Sigma detection rules (.yaml)
 tblue -u https://yoursite.com --sentinel        # Microsoft Sentinel KQL analytics rules
 
 # Run only specific modules
-tblue -u https://yoursite.com --only headers,ssl,cookies,xss
+tblue -u https://yoursite.com --only headers,ssl,cookies
+
+# Intrusive modules need --active; without it Tblue tells you rather than
+# silently scanning nothing
+tblue -u https://yoursite.com --only xss --active
 
 # Run an entire category
 tblue -u https://yoursite.com --only authentication
@@ -264,7 +294,7 @@ The terminal and HTML report also show a letter grade (A+ to F) and a numeric sc
 
 ## Architecture
 
-Tblue runs all 614 scanners in parallel using a `ThreadPoolExecutor` (default 50 workers). A shared response cache prevents redundant HTTP requests when multiple scanners hit the same URL.
+Tblue runs the 582 passive scanners in parallel using a `ThreadPoolExecutor` (default 50 workers); the 32 opt-in modules run after them when `--probe` or `--active` is given. A shared response cache prevents redundant HTTP requests when multiple scanners hit the same URL.
 
 Each scanner inherits from `BaseScanner`, returns typed result dicts, and short-circuits immediately when the response has no relevant signals — so passive scans stay fast even on slow sites.
 
@@ -371,7 +401,7 @@ Tblue is built for scanning websites you own or have explicit written permission
 
 ## Disclaimer
 
-Tblue is a passive scanner by default — it only reads what your site sends back and never modifies state. The optional `--active` flag enables a small number of probing checks (e.g. sending crafted requests to detect open redirects or SSRF surfaces); only use it on targets you own or have explicit permission to test.
+Tblue is a passive scanner by default — it only reads what your site sends back and never modifies state, and that is enforced by a test rather than asserted. `--probe` adds 12 side-effect-free checks. `--active` adds 20 intrusive ones that submit authentication attempts, password-reset and registration requests, injection payloads and port scans; these can lock accounts out, email real users and trip WAFs, so only use them on targets you own or have explicit written permission to test.
 
 It flags things that look wrong based on known security standards. It does not verify that a finding is exploitable in your specific configuration, and it cannot catch issues that are only visible behind authentication or under specific conditions.
 

@@ -9,6 +9,7 @@ import threading
 from concurrent.futures import ThreadPoolExecutor, as_completed
 import requests
 from typing import List, Dict
+from urllib.parse import urlparse
 
 from tblue import __version__
 from tblue.constants import DEFAULT_DEPTH, DEFAULT_USER_AGENT, DEFAULT_TIMEOUT, DEFAULT_RETRIES
@@ -262,7 +263,7 @@ from tblue.scanner.server_timing_disclosure import ServerTimingDisclosureScanner
 from tblue.scanner.iframe_security_deep import IframeSecurityDeepScanner
 from tblue.scanner.secret_in_error_page import SecretInErrorPageScanner
 from tblue.scanner.insecure_deserialization_passive import InsecureDeserializationPassiveScanner
-from tblue.scanner.xxe_passive import XXEPassiveScanner
+from tblue.scanner.xxe_probe import XXEProbeScanner
 from tblue.scanner.ssrf_passive import SSRFPassiveScanner
 from tblue.scanner.host_header_injection import HostHeaderInjectionScanner
 from tblue.scanner.clickjacking_advanced import ClickjackingAdvancedScanner
@@ -277,7 +278,7 @@ from tblue.scanner.saml_passive import SAMLPassiveScanner
 from tblue.scanner.file_upload_security import FileUploadSecurityScanner
 from tblue.scanner.subdomain_takeover_passive import SubdomainTakeoverPassiveScanner
 from tblue.scanner.dns_rebinding_passive import DNSRebindingPassiveScanner
-from tblue.scanner.log_injection_passive import LogInjectionPassiveScanner
+from tblue.scanner.log_injection_probe import LogInjectionProbeScanner
 from tblue.scanner.parameter_pollution import ParameterPollutionScanner
 from tblue.scanner.feature_policy_security import FeaturePolicySecurityScanner
 from tblue.scanner.docker_exposure     import DockerExposureScanner
@@ -719,7 +720,7 @@ from tblue.report import kql as sentinel_report
 from tblue.remediation import generate_playbooks, format_terminal as fmt_playbook_term, format_markdown as fmt_playbook_md
 from tblue.scoring import score_results
 from tblue.history import save_snapshot, load_previous_snapshot, compute_diff, load_score_history
-from tblue.logger import get_logger, set_level, log_head
+from tblue.logger import get_logger, set_level, log_head, log_warn
 from tblue.ai_analysis import analyze_with_ai, format_ai_analysis_terminal
 
 logger = get_logger(__name__)
@@ -881,7 +882,7 @@ ALL_MODULES: List[str] = [
     "cache_poisoning_passive", "secret_in_error_page",
     # Phase 103: Open redirect deep, insecure deserialization passive, XXE passive, SSRF passive
     "open_redirect_deep", "insecure_deserialization_passive",
-    "xxe_passive", "ssrf_passive",
+    "xxe_probe", "ssrf_passive",
     # Phase 104: Host header injection, clickjacking advanced, business logic, API versioning
     "host_header_injection", "clickjacking_advanced",
     "business_logic_exposure", "api_versioning_security",
@@ -892,7 +893,7 @@ ALL_MODULES: List[str] = [
     "oauth_redirect_uri_validation", "saml_passive", "file_upload_security",
     # Phase 107-108: Subdomain takeover, DNS rebinding, log injection, parameter pollution
     "subdomain_takeover_passive", "dns_rebinding_passive",
-    "log_injection_passive", "parameter_pollution",
+    "log_injection_probe", "parameter_pollution",
     # Phase 109 (final): WebSocket security deep, source map exposure, feature/permissions policy
     "websocket_security_deep", "sourcemap_exposure", "feature_policy_security",
     # Phase 81: Previously-implemented scanners now activated (reach 210 total)
@@ -1390,7 +1391,7 @@ _SCANNER_REGISTRY: List[tuple] = [
     ("secret_in_error_page", SecretInErrorPageScanner, "Secret in error page — stack traces, DB connection strings, internal paths, API keys in 404/500 responses..."),
     ("open_redirect_deep", OpenRedirectDeepScanner, "Open redirect deep — URL param redirect, meta-refresh external, JS location external assignment..."),
     ("insecure_deserialization_passive", InsecureDeserializationPassiveScanner, "Insecure deserialization passive — Java rO0AB, PHP O:, .NET ViewState without MAC, serialized cookies..."),
-    ("xxe_passive", XXEPassiveScanner, "XXE passive — ENTITY SYSTEM in XML response, DOCTYPE exposure, entity value reflection in API..."),
+    ("xxe_probe", XXEProbeScanner, "XXE passive — ENTITY SYSTEM in XML response, DOCTYPE exposure, entity value reflection in API..."),
     ("ssrf_passive", SSRFPassiveScanner, "SSRF passive — metadata IP in response, SSRF-prone URL params, URL-fetching endpoints (/proxy, /fetch, /render)..."),
     ("host_header_injection", HostHeaderInjectionScanner, "Host header injection — X-Forwarded-Host reflection, password reset link poisoning, Location header probe..."),
     ("clickjacking_advanced", ClickjackingAdvancedScanner, "Clickjacking advanced — missing X-Frame-Options/CSP frame-ancestors, ALLOW-FROM deprecated, JS framebuster, sensitive page frameable..."),
@@ -1405,7 +1406,7 @@ _SCANNER_REGISTRY: List[tuple] = [
     ("file_upload_security", FileUploadSecurityScanner, "File upload security — no accept restriction, dangerous types (.php/.asp/.svg), exposed /upload endpoint..."),
     ("subdomain_takeover_passive", SubdomainTakeoverPassiveScanner, "Subdomain takeover passive — GitHub Pages, Heroku, S3, Azure, Netlify, Zendesk unclaimed resource pages..."),
     ("dns_rebinding_passive", DNSRebindingPassiveScanner, "DNS rebinding passive — private IP in response, localhost references, arbitrary Host header accepted..."),
-    ("log_injection_passive", LogInjectionPassiveScanner, "Log injection passive — CRLF injection via URL (%0d%0a), injected header in response, User-Agent CRLF..."),
+    ("log_injection_probe", LogInjectionProbeScanner, "Log injection passive — CRLF injection via URL (%0d%0a), injected header in response, User-Agent CRLF..."),
     ("parameter_pollution", ParameterPollutionScanner, "HTTP parameter pollution — both duplicate values reflected, last-wins override, array-style parameter injection..."),
     ("websocket_security_deep", WebSocketSecurityDeepScanner, "WebSocket security deep — plain ws:// scheme, auth token in URL, Socket.IO endpoint exposure..."),
     ("sourcemap_exposure", SourceMapExposureScanner, "Source map exposure — sourceMappingURL comment, .js.map file downloadable, webpack server paths revealed..."),
@@ -1883,6 +1884,83 @@ _SCANNER_REGISTRY = [
 ]
 del _seen_cls
 
+# Modules that send traffic the target did not invite. These are NOT passive
+# and never run unless the user passes --active.
+#
+# The third group was determined empirically, not by name: every scanner was
+# run against an instrumented server and any that issued POST/PUT/PATCH/DELETE
+# or sent traversal / XXE / CRLF / injection payloads is listed here. Several
+# are named "passive" but are not. tests/test_passive_by_default.py reproduces
+# that measurement and fails if a default scanner starts sending traffic.
+# ── Scan tiers ────────────────────────────────────────────────────────────────
+# Tblue splits scanners by what they send, not by what they are named. The
+# assignment below was produced by measurement: every scanner was run against
+# an instrumented server and classified by its observed traffic.
+#
+#   default    read-only. GET/HEAD plus a CORS preflight. Safe on production.
+#   --probe    also sends crafted but side-effect-free requests: GraphQL
+#              introspection, CORS origin reflection, TLS cipher negotiation,
+#              DNS enumeration. Nothing is modified, no credentials submitted.
+#   --active   also sends intrusive traffic: authentication attempts, password
+#              reset and registration submissions, injection payloads, port
+#              scans. These can lock accounts out, email real users, create
+#              records and trip WAFs. Own the target before using this.
+
+# Crafted requests with no side effects.
+PROBE_MODULES: set = {
+    "graphql",
+    "graphql_advanced",
+    "graphql_batch_abuse",
+    "graphql_batching",
+    "graphql_depth",
+    "graphql_field_suggestion",
+    "graphql_info_disclosure",
+    "graphql_persisted_queries",
+    "graphql_subscription",
+    "active_cors_fuzz",
+    "active_tls_cipher",
+    "active_subdomain_enum",
+}
+
+# Traffic with real consequences for the target or its users.
+INTRUSIVE_MODULES: set = {
+    # Authentication: repeated failed logins can lock accounts; reset probes
+    # can email real people; mass_assignment attempts to create records.
+    "account_enumeration",
+    "account_lockout",
+    "password_reset",
+    "rate_limit",
+    "timing_oracle",
+    "mass_assignment",
+    "xss",
+    "ldap_injection",
+    "llm_prompt_injection",
+    # Attack payloads: traversal, XXE, CRLF, response splitting.
+    "xxe_probe",
+    "xxe_injection",
+    "log_injection_probe",
+    "path_traversal_deep",
+    "http_response_splitting",
+    "api_error_disclosure",
+    # Non-idempotent HTTP verbs against live endpoints.
+    "active_http_verb",
+    "http_verb_tampering",
+    # Network-level: port scans and database wire protocols.
+    "ports",
+    "active_port_probe",
+    "redis_exposure",
+}
+
+# Everything held out of the default run. --active implies --probe.
+ACTIVE_MODULES: set = PROBE_MODULES | INTRUSIVE_MODULES
+
+# Split the registry: passive entries feed the default worker pool, active
+# entries are reachable only via --active.
+_ACTIVE_REGISTRY  = [e for e in _SCANNER_REGISTRY if e[0]     in ACTIVE_MODULES]
+_TIER_OF = {**{k: "probe" for k in PROBE_MODULES},
+            **{k: "intrusive" for k in INTRUSIVE_MODULES}}
+_SCANNER_REGISTRY = [e for e in _SCANNER_REGISTRY if e[0] not in ACTIVE_MODULES]
+
 # Rebuild ALL_MODULES: keep only keys that exist in the deduplicated registry,
 # and remove any duplicate string entries, preserving first-seen order.
 _registry_keys: set = {entry[0] for entry in _SCANNER_REGISTRY}
@@ -1930,6 +2008,22 @@ def build_session(args=None) -> requests.Session:
         session.auth = (user, pwd)
 
     return session
+
+
+def gated_selection(only: str) -> Dict[str, List[str]]:
+    """Names in --only that exist but sit behind --probe / --active.
+
+    Without this the CLI silently scanned nothing: `--only xss` resolved to an
+    empty module list and produced a clean, empty report. A security tool must
+    never report "no findings" when it in fact ran no checks.
+    """
+    named = {m.strip() for m in (only or "").split(",") if m.strip()}
+    return {
+        "probe":     sorted(named & PROBE_MODULES),
+        "intrusive": sorted(named & INTRUSIVE_MODULES),
+        "unknown":   sorted(n for n in named
+                            if n not in ALL_MODULES and n not in ACTIVE_MODULES),
+    }
 
 
 def resolve_modules(only: str, skip: str) -> List[str]:
@@ -2056,14 +2150,21 @@ Examples:
                         help="Anthropic API key for AI-powered attack chain analysis (or set ANTHROPIC_API_KEY env var)")
     parser.add_argument("--ai-model",           default="claude-sonnet-4-6", metavar="MODEL",
                         help="Claude model for AI analysis (default: claude-sonnet-4-6)")
+    parser.add_argument("--ai",                 action="store_true",
+                        help="Send findings to Anthropic for AI attack-chain analysis. "
+                             "Opt-in: nothing is transmitted without this flag (or --ai-key).")
     parser.add_argument("--no-ai",              action="store_true",
                         help="Disable AI analysis even if ANTHROPIC_API_KEY is set")
     parser.add_argument("--stride",             action="store_true",
                         help="Generate STRIDE threat model (JSON + Markdown) from scan findings")
     parser.add_argument("--poc",                action="store_true",
                         help="Generate Proof-of-Concept curl commands for all FAIL/WARN findings (JSON + Markdown)")
+    parser.add_argument("--probe",              action="store_true",
+                        help="Also run side-effect-free probes: GraphQL introspection, "
+                             "CORS origin reflection, TLS cipher negotiation, DNS enumeration. "
+                             "Sends crafted requests but modifies nothing.")
     parser.add_argument("--active",             action="store_true",
-                        help="Enable active scanning modules (CORS origin fuzz, HTTP verb probe, port scan, subdomain enum, TLS cipher probe). Sends additional requests to the target.")
+                        help="Run every probe INCLUDING intrusive ones: authentication attempts, password-reset and registration submissions, injection payloads and port scans. These can lock accounts out, email real users and trip WAFs. Implies --probe. Own the target before using this.")
     parser.add_argument("--dashboard",          action="store_true",
                         help="Open a live browser dashboard that streams scan results in real time")
     parser.add_argument("--browser",            action="store_true",
@@ -2200,6 +2301,34 @@ def _run_scan(parser, args, target: str) -> None:
     """Execute the full scan for a single target URL."""
     active = resolve_modules(args.only, args.skip)
 
+    # --only may name a module that exists but is gated behind --probe/--active.
+    # Say so loudly: silently scanning nothing and reporting no findings is the
+    # worst failure mode a security tool has.
+    if args.only:
+        gated = gated_selection(args.only)
+        needs_probe  = gated["probe"]  and not (args.probe or args.active)
+        needs_active = gated["intrusive"] and not args.active
+        if needs_probe:
+            log_warn(logger, f"--only names probe-tier modules that will not run "
+                             f"without --probe: {', '.join(gated['probe'])}")
+        if needs_active:
+            log_warn(logger, f"--only names intrusive modules that will not run "
+                             f"without --active: {', '.join(gated['intrusive'])}")
+        if gated["unknown"]:
+            log_warn(logger, f"--only names unknown modules: "
+                             f"{', '.join(gated['unknown'])}")
+        would_run = bool(active) or (gated["probe"] and (args.probe or args.active)) \
+                    or (gated["intrusive"] and args.active)
+        if not would_run:
+            parser.error(
+                "--only selected no runnable modules, so nothing would be scanned. "
+                + ("Add --active to run: " + ", ".join(gated["intrusive"]) + ". "
+                   if gated["intrusive"] else "")
+                + ("Add --probe to run: " + ", ".join(gated["probe"]) + ". "
+                   if gated["probe"] else "")
+                + ("Unknown module(s): " + ", ".join(gated["unknown"]) + ". "
+                   if gated["unknown"] else ""))
+
     if args.fail_below is not None and not (0 <= args.fail_below <= 100):
         parser.error("--fail-below must be between 0 and 100")
 
@@ -2212,13 +2341,22 @@ def _run_scan(parser, args, target: str) -> None:
         previous_snapshot = load_previous_snapshot(target)
 
     session: requests.Session    = build_session(args)
+    # Include the gated tiers: --probe/--active write their results here too,
+    # and a missing key raised KeyError that the dispatch loop swallowed as
+    # "active scanner error", silently dropping every active finding.
     all_results: Dict[str, List] = {m: [] for m in ALL_MODULES}
+    all_results.update({m: [] for m in ACTIVE_MODULES})
     start: float                 = time.time()
 
     # ── Shared response cache — eliminates redundant fetches ───────────────
     shared_cache = ResponseCache(max_entries=2000, ttl=300.0)
 
-    scanner_kwargs = {"timeout": args.timeout, "retries": args.retries, "cache": shared_cache}
+    # Credentials supplied for the target must never be sent anywhere else.
+    # HTTPClient uses allowed_host to route off-target requests (crt.sh, OSV,
+    # OTX, ...) through a session with no auth, cookies or custom headers.
+    _target_host = (urlparse(target).hostname or "").lower()
+    scanner_kwargs = {"timeout": args.timeout, "retries": args.retries,
+                      "cache": shared_cache, "allowed_host": _target_host}
 
     # Pre-fetch the target URL into cache so all scanners get it instantly
     try:
@@ -2286,7 +2424,7 @@ def _run_scan(parser, args, target: str) -> None:
                 BrowserStorageScanner(session, **scanner_kwargs).scan(target))
 
     # ── Active Scanning (opt-in via --active) ─────────────────────────────
-    if getattr(args, "active", False):
+    if getattr(args, "active", False) or getattr(args, "probe", False):
         _active_map = {
             "active_cors_fuzz":     (ActiveCORSOriginFuzzScanner,  "Active CORS origin fuzzing..."),
             "active_http_verb":     (ActiveHTTPVerbProbeScanner,   "Active HTTP verb probing..."),
@@ -2294,8 +2432,15 @@ def _run_scan(parser, args, target: str) -> None:
             "active_subdomain_enum":(ActiveSubdomainEnumScanner,   "Active subdomain DNS enumeration..."),
             "active_tls_cipher":    (ActiveTLSCipherProbeScanner,  "Active TLS cipher suite probing..."),
         }
+        for _k, _cls, _msg in _ACTIVE_REGISTRY:
+            _active_map.setdefault(_k, (_cls, _msg))
+        # --active implies --probe; --probe alone stops short of intrusive.
+        _tier = PROBE_MODULES | INTRUSIVE_MODULES if getattr(args, "active", False) else PROBE_MODULES
+        _only_raw = {m.strip() for m in (getattr(args, "only", "") or "").split(",") if m.strip()}
+        _skip_raw = {m.strip() for m in (getattr(args, "skip", "") or "").split(",") if m.strip()}
+        _selected = (_only_raw & _tier) if _only_raw else (_tier - _skip_raw)
         for mod_name, (cls, msg) in _active_map.items():
-            if mod_name in active:
+            if mod_name in _selected:
                 log_head(logger, msg)
                 try:
                     all_results[mod_name].extend(cls(session, **scanner_kwargs).scan(target))
@@ -2305,7 +2450,10 @@ def _run_scan(parser, args, target: str) -> None:
     # ── AI-Powered Analysis ────────────────────────────────────────────────
     import os
     ai_analysis = None
-    if not getattr(args, "no_ai", False):
+    # AI analysis sends findings to a third party, so it is opt-in. Merely
+    # having ANTHROPIC_API_KEY in the environment must not transmit results.
+    _ai_requested = bool(getattr(args, "ai", False) or getattr(args, "ai_key", None))
+    if _ai_requested and not getattr(args, "no_ai", False):
         ai_key = getattr(args, "ai_key", None) or os.environ.get("ANTHROPIC_API_KEY")
         ai_model = getattr(args, "ai_model", "claude-sonnet-4-6")
         if ai_key:

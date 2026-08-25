@@ -71,8 +71,25 @@ class TestHelpers:
         assert result == []
 
     def test_query_caa_handles_exception(self):
-        """_query_caa returns empty list when DNS fails."""
+        """_query_caa returns empty list when DNS fails.
+
+        Patches dns.resolver.resolve, not _raw_caa_query: the latter is only
+        the no-dnspython fallback, so mocking it left the primary path making a
+        live DNS query. That made this test network-dependent and it failed
+        intermittently under parallel load.
+        """
+        import dns.resolver
         from tblue.scanner.dns_caa import _query_caa
-        with patch("tblue.scanner.dns_caa._raw_caa_query", side_effect=Exception("DNS timeout")):
+        with patch("dns.resolver.resolve", side_effect=dns.exception.Timeout("DNS timeout")), \
+             patch("tblue.scanner.dns_caa._raw_caa_query", side_effect=Exception("DNS timeout")):
             result = _query_caa("nonexistent-tbl9z7x.invalid")
         assert result == []
+
+    def test_query_caa_makes_no_network_call_when_resolver_mocked(self):
+        """Guards the mock actually intercepting the primary code path."""
+        import dns.resolver
+        from tblue.scanner.dns_caa import _query_caa
+        with patch("dns.resolver.resolve") as mock_resolve:
+            mock_resolve.return_value = []
+            _query_caa("example.com")
+        mock_resolve.assert_called_once()

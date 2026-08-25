@@ -29,9 +29,11 @@ class BaseScanner:
         backoff:    float    = DEFAULT_BACKOFF,
         rate_limit: float    = DEFAULT_RATE_LIMIT,
         cache:      Optional["ResponseCache"] = None,
+        allowed_host: Optional[str] = None,
         **_kwargs: Any,
     ) -> None:
-        self.http    = HTTPClient(session, timeout, retries, backoff, rate_limit, cache=cache)
+        self.http    = HTTPClient(session, timeout, retries, backoff, rate_limit,
+                                  cache=cache, allowed_host=allowed_host)
         self.results: List[Dict[str, Any]] = []
 
     def scan(self, url: str) -> List[Dict[str, Any]]:

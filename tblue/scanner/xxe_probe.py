@@ -99,7 +99,7 @@ def _check_xml_endpoint_accepts_dtd(http, url: str) -> list:
     return findings
 
 
-class XXEPassiveScanner(BaseScanner):
+class XXEProbeScanner(BaseScanner):
     def scan(self, url: str) -> list:
         results = []
         resp = self.http.get(url)

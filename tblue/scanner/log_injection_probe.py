@@ -53,7 +53,7 @@ def _check_newline_in_user_agent(http, url: str) -> list:
     return findings
 
 
-class LogInjectionPassiveScanner(BaseScanner):
+class LogInjectionProbeScanner(BaseScanner):
     def scan(self, url: str) -> list:
         results = []
         resp = self.http.get(url)

@@ -894,7 +894,7 @@ THREAT_INTEL = {
             "For Java: use SerialKiller or RASP to block known gadget chain classes",
         ],
     },
-    "xxe_passive": {
+    "xxe_probe": {
         "severity": "HIGH",
         "short": "XXE Passive Indicators",
         "cwe": "CWE-611", "owasp": "A03:2021",
@@ -1123,7 +1123,7 @@ THREAT_INTEL = {
             "Use IMDSv2 on cloud instances to require token-based metadata access",
         ],
     },
-    "log_injection_passive": {
+    "log_injection_probe": {
         "severity": "MEDIUM",
         "short": "Log Injection",
         "cwe": "CWE-117", "owasp": "A09:2021",

@@ -22,7 +22,7 @@ THREAT_INTEL = mod.THREAT_INTEL
 # ── Category mapping ──────────────────────────────────────────────────────────
 CATEGORIES = {
     "Critical Injection & RCE": [
-        "command_injection", "ssti", "xxe_injection", "xxe_passive",
+        "command_injection", "ssti", "xxe_injection", "xxe_probe",
         "deserialization", "deserialization_gadget_passive", "insecure_deserialization_passive",
         "log4shell_passive", "latex_injection_passive", "el_injection",
         "csti", "server_side_template_passive", "nosql_injection_advanced",
@@ -170,7 +170,7 @@ CATEGORIES = {
     "Injection (Other)": [
         "parameter_pollution", "parameter_pollution_passive",
         "path_parameter_pollution", "http_parameter_pollution",
-        "log_injection", "log_injection_passive",
+        "log_injection", "log_injection_probe",
         "crlf_injection", "csv_injection", "content_injection",
         "content_negotiation", "link_injection_passive",
         "link_header_injection", "header_injection_sink",

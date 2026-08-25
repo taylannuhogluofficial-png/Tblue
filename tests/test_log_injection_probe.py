@@ -2,10 +2,10 @@
 from unittest.mock import MagicMock, patch
 URL = "https://example.com"
 
-class TestLogInjectionPassiveScanner:
+class TestLogInjectionProbeScanner:
     def _scanner(self):
-        from tblue.scanner.log_injection_passive import LogInjectionPassiveScanner
-        return LogInjectionPassiveScanner(MagicMock())
+        from tblue.scanner.log_injection_probe import LogInjectionProbeScanner
+        return LogInjectionProbeScanner(MagicMock())
     def _resp(self, body="OK", status=200, headers=None):
         r = MagicMock(); r.text = body; r.status_code = status; r.headers = headers or {}; return r
 
@@ -21,7 +21,7 @@ class TestLogInjectionPassiveScanner:
         assert any(r["status"] == "PASS" for r in results)
 
     def test_crlf_header_injection_fails(self):
-        from tblue.scanner.log_injection_passive import _check_crlf_injection
+        from tblue.scanner.log_injection_probe import _check_crlf_injection
         http = MagicMock(); r = MagicMock(); r.status_code = 200; r.text = "OK"
         r.headers = {"x-log-injected": "true", "content-type": "text/html"}
         http.get.return_value = r
@@ -29,7 +29,7 @@ class TestLogInjectionPassiveScanner:
         assert any("crlf" in f["type"] for f in findings)
 
     def test_no_crlf_reflection_passes(self):
-        from tblue.scanner.log_injection_passive import _check_crlf_injection
+        from tblue.scanner.log_injection_probe import _check_crlf_injection
         http = MagicMock(); r = MagicMock(); r.status_code = 404; r.text = "Not Found"; r.headers = {}
         http.get.return_value = r
         findings = _check_crlf_injection(http, URL)

@@ -4,6 +4,7 @@ All scanners use this instead of calling requests directly.
 """
 
 import time
+from urllib.parse import urlparse
 from typing import Optional, Dict, Any, TYPE_CHECKING
 from requests import Session, Response
 from tblue.constants import (
@@ -11,6 +12,7 @@ from tblue.constants import (
     DEFAULT_RETRIES,
     DEFAULT_BACKOFF,
     DEFAULT_RATE_LIMIT,
+    DEFAULT_USER_AGENT,
 )
 from tblue.logger import get_logger
 
@@ -40,6 +42,7 @@ class HTTPClient:
         backoff:    float            = DEFAULT_BACKOFF,
         rate_limit: float            = DEFAULT_RATE_LIMIT,
         cache:      Optional["ResponseCache"] = None,
+        allowed_host: Optional[str] = None,
     ) -> None:
         self.session    = session
         self.timeout    = timeout
@@ -47,7 +50,37 @@ class HTTPClient:
         self.backoff    = backoff
         self.rate_limit = rate_limit
         self.cache      = cache
+        # Host the user authorised us to talk to. Requests to anything else
+        # (crt.sh, OSV, OTX, ...) must never carry their credentials.
+        self.allowed_host = (allowed_host or "").lower().lstrip(".") or None
+        self._offsite_session: Optional[Session] = None
         self._last_request_time: float = 0.0
+
+    # ── Credential scoping ────────────────────────────────────────────────
+    def _in_scope(self, url: str) -> bool:
+        """True when url points at the scan target (or a subdomain of it)."""
+        if not self.allowed_host:
+            return True
+        host = (urlparse(url).hostname or "").lower()
+        if not host:
+            return True
+        return host == self.allowed_host or host.endswith("." + self.allowed_host)
+
+    def _clean_session(self) -> Session:
+        """A session with no cookies, no auth and no user-supplied headers.
+
+        Third-party enrichment lookups go through this so a --bearer token or
+        --cookie for the target is never transmitted to an unrelated service.
+        """
+        if self._offsite_session is None:
+            s = Session()
+            s.headers["User-Agent"] = self.session.headers.get(
+                "User-Agent", DEFAULT_USER_AGENT)
+            for h in ("Accept", "Accept-Language"):
+                if h in self.session.headers:
+                    s.headers[h] = self.session.headers[h]
+            self._offsite_session = s
+        return self._offsite_session
 
     def _throttle(self) -> None:
         elapsed = time.time() - self._last_request_time
@@ -101,9 +134,11 @@ class HTTPClient:
         """Internal: retry + backoff. Always returns None on failure."""
         self._throttle()
 
+        session = self.session if self._in_scope(url) else self._clean_session()
+
         for attempt in range(1, self.retries + 1):
             try:
-                resp = self.session.request(
+                resp = session.request(
                     method, url, timeout=self.timeout, **kwargs
                 )
                 return resp
