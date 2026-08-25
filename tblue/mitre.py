@@ -5,8 +5,17 @@ Maps finding type strings to Enterprise ATT&CK technique IDs so every
 result carries machine-readable threat taxonomy. Lets security teams
 immediately know the kill-chain stage and pivot to related detections.
 
+Mappings target **Enterprise** ATT&CK v16 tactic names (notably
+"Defense Evasion", which ATT&CK v18 later split into "Stealth" and
+"Defense Impairment"). Technique IDs and names are verified against the
+published catalogue by tests/test_mitre_catalogue.py; only Enterprise
+techniques are used, so Mobile-only IDs such as T1430 are not valid here.
+
 Reference: https://attack.mitre.org/techniques/enterprise/
 """
+
+ATTACK_MATRIX  = "enterprise"
+ATTACK_VERSION = "16"
 
 import re
 from typing import List, Dict
@@ -22,7 +31,7 @@ _RULES = [
      _T("T1592", "Gather Victim Host Information", "Reconnaissance")),
 
     (r"certificate.*transparency|crt\.sh|subdomain.*enum",
-     _T("T1596.005", "Search Open Technical Databases", "Reconnaissance")),
+     _T("T1596.003", "Search Open Technical Databases: Digital Certificates", "Reconnaissance")),
 
     (r"port.*open|port.*expos|database.*port|redis|mongodb|elastic.*port|memcached",
      _T("T1590", "Gather Victim Network Information", "Reconnaissance")),
@@ -48,7 +57,7 @@ _RULES = [
      _T("T1190", "Exploit Public-Facing Application", "Initial Access")),
 
     (r"supply.*chain|sri.*missing|sri.*coverage|sri.*weak",
-     _T("T1195.002", "Compromise Software Supply Chain", "Initial Access")),
+     _T("T1195.002", "Supply Chain Compromise: Compromise Software Supply Chain", "Initial Access")),
 
     (r"open.*redirect|redirect.*parameter",
      _T("T1566.002", "Phishing: Spearphishing Link", "Initial Access")),
@@ -72,11 +81,11 @@ _RULES = [
     # ── Credential Access ─────────────────────────────────────────────────────
     (r"\.env|credential.*file|html.*comment.*password|html.*comment.*credential"
      r"|html.*comment.*key|backup.*file.*credential|git.*expos",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
 
     (r"aws.*key|stripe.*key|github.*token|openai.*key|private.*key|rsa.*key|api.*secret"
      r"|jwt.*secret|hardcoded.*secret|js.*secret",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
 
     (r"private.*key|pem.*block|rsa.*private",
      _T("T1552.004", "Unsecured Credentials: Private Keys", "Credential Access")),
@@ -120,7 +129,7 @@ _RULES = [
      _T("T1125", "Video Capture", "Collection")),
 
     (r"permissions.*policy.*geolocation",
-     _T("T1430", "Location Tracking", "Collection")),
+     _T("T1119", "Automated Collection", "Collection")),
 
     # ── Defense Evasion / Privilege Escalation ───────────────────────────────
     (r"http.*trace|trace.*method",
@@ -189,7 +198,7 @@ _RULES = [
     # ── Phase 16 scanners ─────────────────────────────────────────────────────
     # JWT Advanced
     (r"jwt.*alg.*none|jwt.*algorithm.*none",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"jwt.*kid.*path.*traversal|kid.*traversal",
      _T("T1055", "Process Injection", "Defense Evasion")),
     (r"jwt.*jku.*http|jwt.*external.*key|jwt.*sensitive.*payload",
@@ -254,7 +263,7 @@ _RULES = [
     (r"business.*logic.*price|client.*submitted.*price|hidden.*price.*field",
      _T("T1565", "Data Manipulation", "Impact")),
     (r"business.*logic.*idor|idor.*sequential|numeric.*object.*id",
-     _T("T1530", "Data from Cloud Storage Object", "Collection")),
+     _T("T1530", "Data from Cloud Storage", "Collection")),
     (r"business.*logic.*privilege|privilege.*escalation.*param|role.*field",
      _T("T1548", "Abuse Elevation Control Mechanism", "Privilege Escalation")),
     (r"cart.*basket.*endpoint|quantity.*no.*min|negative.*quantity",
@@ -308,9 +317,9 @@ _RULES = [
 
     # API Authentication Security
     (r"api.*auth.*basic.*http|basic.*auth.*non.https|http.*basic.*auth",
-     _T("T1557.001", "Adversary-in-the-Middle: LLMNR/NBT-NS Poisoning", "Credential Access")),
+     _T("T1557.001", "Adversary-in-the-Middle: LLMNR/NBT-NS Poisoning and SMB Relay", "Credential Access")),
     (r"api.*auth.*api.*key.*url|api.*key.*query.*string",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"api.*auth.*accessible.*without.*auth|sensitive.*endpoint.*no.*auth",
      _T("T1190", "Exploit Public-Facing Application", "Initial Access")),
     (r"api.*auth.*401.*www-authenticate|401.*missing.*www-authenticate",
@@ -324,11 +333,11 @@ _RULES = [
 
     # Sensitive Data Exposure
     (r"sensitive.*data.*credential.*url|sensitive.*data.*password.*url",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"sensitive.*data.*session.*url|session.*token.*url",
      _T("T1539", "Steal Web Session Cookie", "Credential Access")),
     (r"sensitive.*data.*html.*comment|token.*html.*comment",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"sensitive.*data.*pii.*url|pii.*url",
      _T("T1213", "Data from Information Repositories", "Collection")),
 
@@ -480,9 +489,9 @@ _RULES = [
 
     # CI/CD pipeline exposure
     (r"cicd.*exposure|ci.*cd.*config.*expos|pipeline.*config.*accessible|github.*workflow.*expos",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"jenkinsfile.*expos|travis.*yml.*expos|gitlab.*ci.*expos|circleci.*expos",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"dockerfile.*expos|docker.compose.*expos|build.*artifact.*expos",
      _T("T1195.002", "Supply Chain Compromise: Compromise Software Supply Chain", "Initial Access")),
     (r"hardcoded.*secret.*ci|cicd.*secret.*expos|pipeline.*token.*expos",
@@ -568,7 +577,7 @@ _RULES = [
 
     # Client-side storage security
     (r"password.*written.*localStorage|secret.*localStorage|credential.*sessionStorage",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"jwt.*token.*localStorage|auth.*token.*localStorage|bearer.*sessionStorage",
      _T("T1539", "Steal Web Session Cookie", "Credential Access")),
     (r"pii.*payment.*localStorage|credit.*card.*storage|ssn.*sessionStorage",
@@ -576,9 +585,9 @@ _RULES = [
     (r"auth.*read.*localStorage.*decision|getItem.*token.*auth.*decision",
      _T("T1078", "Valid Accounts", "Defense Evasion")),
     (r"indexedDB.*sensitive|indexed.*db.*credentials|indexed.*db.*passwords",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"sensitive.*key.*localStorage|sensitive.*key.*sessionStorage",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"websql.*deprecated|openDatabase.*usage|web.*sql.*database",
      _T("T1005", "Data from Local System", "Collection")),
 
@@ -610,7 +619,7 @@ _RULES = [
     (r"missing.*cross.origin.embedder.policy|coep.*header.*absent|cross.origin.*embedder",
      _T("T1203", "Exploitation for Client Execution", "Execution")),
     (r"missing.*cross.origin.resource.policy|corp.*header.*absent|cross-site.*without.*corp",
-     _T("T1557.001", "Adversary-in-the-Middle: LLMNR/NBT-NS Poisoning", "Collection")),
+     _T("T1557.001", "Adversary-in-the-Middle: LLMNR/NBT-NS Poisoning and SMB Relay", "Collection")),
     (r"api.*endpoint.*cross.site.*corp|cross.site.*request.*no.*policy|fetch.*metadata.*policy",
      _T("T1185", "Browser Session Hijacking", "Collection")),
     (r"form.*action.*corp|form.*endpoint.*cross.site",
@@ -658,7 +667,7 @@ _RULES = [
     (r"script.*content.*prefix.*attachment|script.like.*content.*download",
      _T("T1204.002", "User Execution: Malicious File", "Execution")),
     (r"rfd.*filename.*disposition|user.controlled.*filename.*disposition",
-     _T("T1566.002", "Phishing: Spear Phishing Link", "Initial Access")),
+     _T("T1566.002", "Phishing: Spearphishing Link", "Initial Access")),
 
     # Source Map Exposure
     (r"source.*map.*source.*content|javascript.*source.*map.*exposed|sourcecontent.*exposed",
@@ -672,37 +681,37 @@ _RULES = [
 
     # Framework Config and Log File Exposure (Phase 44)
     (r"laravel.*log.*exposed|storage.*logs.*accessible|application.*log.*exposed|catalina.*out.*exposed",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"log.*file.*stack.*trace|error\.log.*accessible|debug\.log.*exposed",
      _T("T1083", "File and Directory Discovery", "Discovery")),
     (r"log.*auth.*token|session.*id.*log|token.*log.*entry",
      _T("T1539", "Steal Web Session Cookie", "Credential Access")),
     (r"spring.*boot.*application\.properties|application\.yml.*exposed|datasource\.password.*exposed",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"appsettings.*json.*exposed|connectionstring.*exposed|asp\.net.*config.*exposed",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"rails.*database\.yml.*exposed|rails.*secrets\.yml.*exposed|rails.*master\.key.*exposed",
      _T("T1552.004", "Unsecured Credentials: Private Keys", "Credential Access")),
     (r"django.*settings.*exposed|django.*secret_key.*exposed|local_settings.*exposed",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"web\.config.*connectionstring|web\.config.*password.*exposed",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"hibernate.*cfg.*xml.*exposed|persistence\.xml.*exposed|jdbc.*password.*exposed",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"framework.*config.*no.*exposed|no.*configuration.*file.*exposed",
      _T("T1083", "File and Directory Discovery", "Discovery")),
 
     # API Collection Exposure (Phase 43)
     (r"postman.*collection.*exposed|postman_collection.*accessible|postman.*api.*collection",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"insomnia.*workspace.*exposed|insomnia.*collection.*accessible",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"hoppscotch.*collection.*exposed|api.*client.*collection.*accessible",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"bearer.*token.*authorization.*header.*collection|api.*key.*request.*header.*collection",
      _T("T1528", "Steal Application Access Token", "Credential Access")),
     (r"hardcoded.*credential.*collection|credential.*postman|credential.*insomnia",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"api.*collection.*endpoint.*structure|api.*collection.*request.*parameter",
      _T("T1590", "Gather Victim Network Information", "Reconnaissance")),
 
@@ -720,25 +729,25 @@ _RULES = [
 
     # Developer Artifact Exposure (Phase 41)
     (r"har.*file.*exposed|browser.*har.*session|network.*har.*file|har.*cookie.*data",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"terraform.*state.*file|terraform.*tfstate|terraform.*infrastructure.*inventory",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"terraform.*state.*password|terraform.*state.*secret|terraform.*state.*resources",
      _T("T1083", "File and Directory Discovery", "Discovery")),
     (r"\.npmrc.*auth.*token|npmrc.*npm.*auth|yarnrc.*auth.*config",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"ssh.*private.*key.*exposed|id_rsa.*accessible|id_ed25519.*accessible|server\.key.*accessible",
      _T("T1552.004", "Unsecured Credentials: Private Keys", "Credential Access")),
     (r"docker.*config.*registry.*auth|docker.*auth.*token.*exposed|docker.*config\.json",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"aws.*credentials.*exposed|aws.*access.*key.*id.*detected|aws_secret_access_key",
      _T("T1552.005", "Unsecured Credentials: Cloud Instance Metadata API", "Credential Access")),
     (r"kubeconfig.*exposed|kubernetes.*kubeconfig|kube.*config.*cluster.*token",
      _T("T1552.007", "Unsecured Credentials: Container API", "Credential Access")),
     (r"package.lock.*git.*token|package.lock.*embedded.*credential",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"composer.*auth.*json|composer.*oauth.*token|composer.*github.*oauth",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"developer.*artifact.*exposed|sensitive.*developer.*file|dev.*config.*accessible",
      _T("T1083", "File and Directory Discovery", "Discovery")),
 
@@ -770,7 +779,7 @@ _RULES = [
     (r"hf.*tgi.*info|hugging.*face.*inference.*exposed|vllm.*config.*exposed",
      _T("T1590", "Gather Victim Network Information", "Reconnaissance")),
     (r"flowise.*chatflow|flowise.*api.*key|langflow.*flow.*exposed",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
     (r"ai.*api.*exposure.*accessible|llm.*inference.*endpoint.*exposed",
      _T("T1499.002", "Endpoint Denial of Service: Service Exhaustion Flood", "Impact")),
     (r"no.*exposed.*ai.*llm|ai.*api.*pass",
@@ -974,7 +983,7 @@ _RULES = [
     # Phase 70 — CI/CD
     (r"ci/cd exposure.*TEST_VALUE.*accessible|ci/cd exposure.*target.*unreachable"
      r"|ci.*cd.*exposure.*accessible|ci.*cd.*exposure.*unreachable",
-     _T("T1552.001", "Unsecured Credentials: Credentials In Files", "Credential Access")),
+     _T("T1552.001", "Unsecured Credentials: Credentials in Files", "Credential Access")),
 
     # Phase 71 — CMS detection
     (r"cms detection.*not.*identified|cms.*TEST_VALUE.*detected",
@@ -1259,7 +1268,7 @@ _RULES = [
 
     # Phase 132 — Threat intelligence
     (r"threat intelligence.*virustotal|threat intelligence.*no.*api.*keys",
-     _T("T1598.002", "Phishing for Information: Spearphishing Service", "Reconnaissance")),
+     _T("T1596", "Search Open Technical Databases", "Reconnaissance")),
 
     # Phase 133 — URL parameter encoding bypass
     (r"url parameter.*encoding.*bypass",

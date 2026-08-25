@@ -422,7 +422,19 @@ def main():
     out = []
     out.append("# Tblue Scanner Reference")
     out.append("")
-    out.append(f"Complete educational reference for all **{total} passive blue-team scanners** in Tblue.")
+    try:
+        from tblue.cli import _SCANNER_REGISTRY
+        shipped = len(_SCANNER_REGISTRY)
+    except Exception:
+        shipped = None
+    if shipped and shipped != total:
+        out.append(
+            f"In-depth reference for **{total} of the {shipped} passive blue-team scanners** "
+            f"in Tblue. The remaining {shipped - total} ship and run, but do not yet have a "
+            f"long-form entry here — see `tblue --help` for the full module list."
+        )
+    else:
+        out.append(f"Complete educational reference for all **{total} passive blue-team scanners** in Tblue.")
     out.append("Each entry explains what the scanner detects, why it is dangerous, and how to fix it.")
     out.append("")
     out.append("> **Blue-team only.** Tblue is a passive detection tool — no active exploitation, no brute force,")

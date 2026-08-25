@@ -6053,7 +6053,7 @@ THREAT_INTEL = {
         "short": "SameSite Cookie CSRF Misconfiguration",
         "description": "Detects SameSite=None without Secure flag, SameSite=Lax on session/auth cookies (CSRF risk for GET-based mutations), cookie value injection from URL parameters, and session cookies missing explicit SameSite attribute.",
         "cwe": "CWE-352",
-        "mitre": "T1059.007",
+        "mitre": "T1550.004",
         "remediation": [
             "Always pair SameSite=None with the Secure flag",
             "Use SameSite=Strict for session and authentication cookies",

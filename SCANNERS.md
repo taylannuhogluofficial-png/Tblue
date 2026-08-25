@@ -1,6 +1,6 @@
 # Tblue Scanner Reference
 
-Complete educational reference for all **614 passive blue-team scanners** in Tblue.
+In-depth reference for **405 of the 614 passive blue-team scanners** in Tblue. The remaining 209 ship and run, but do not yet have a long-form entry here — see `tblue --help` for the full module list.
 Each entry explains what the scanner detects, why it is dangerous, and how to fix it.
 
 > **Blue-team only.** Tblue is a passive detection tool — no active exploitation, no brute force,
@@ -1779,7 +1779,7 @@ Accept-Ranges on JSON API endpoints enables byte-range timing oracle attacks aga
 
 ### 115. SameSite Cookie CSRF Misconfiguration
 **Module:** `same_site_cookie_security` &nbsp;|&nbsp; **Severity:** 🟠 HIGH
-**CWE-352** &nbsp;|&nbsp; **MITRE:** T1059.007
+**CWE-352** &nbsp;|&nbsp; **MITRE:** T1550.004
 
 Detects SameSite=None without Secure flag, SameSite=Lax on session/auth cookies (CSRF risk for GET-based mutations), cookie value injection from URL parameters, and session cookies missing explicit SameSite attribute.
 
