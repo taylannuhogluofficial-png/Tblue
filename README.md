@@ -1,10 +1,11 @@
-> ### ⚠️ If you ran 1.0.0 or 1.0.1, rotate your credentials
+> ### ⚠️ If you ran an authenticated scan before 2.0.1, rotate those credentials
 >
-> Those releases attached `--cookie` / `--header` / `--bearer` / `--auth` values to a
+> 1.0.0 and 1.0.1 attached `--cookie` / `--header` / `--bearer` / `--auth` values to a
 > shared HTTP session that also reached third-party lookup services, so those services
-> received them. Both are yanked. **If you ran an authenticated scan on either, rotate
-> those credentials.** 2.0.0 scopes credentials to the target host — see the
-> [changelog](CHANGELOG.md) for the full list of fixes.
+> received them. 2.0.0 fixed that but still let `--header` values and the cookie jar
+> follow a redirect off the target host. **Use 2.0.1**, and if you ran an
+> authenticated scan on any earlier release, rotate what you passed it.
+> The [changelog](CHANGELOG.md) has the detail.
 
 <div align="center">
 
@@ -46,7 +47,7 @@ Scanners are split by what they actually send, measured rather than assumed:
 
 `--active` implies `--probe`. The intrusive tier can lock accounts out, send password-reset emails to real people, create records, and trip WAFs — only use it on systems you own.
 
-**What leaves your machine.** Findings are never uploaded. Some scanners look your target up in public intelligence sources (certificate transparency via crt.sh, and vulnerability data from OSV and NVD), which necessarily discloses the domain or version being checked to those services. Credentials you pass with `--bearer`, `--auth`, `--cookie`, or `--header` are sent **only** to the target host and its subdomains, never to those third parties; this is enforced in `HTTPClient` and covered by tests. This holds across redirects too: if the target redirects to another host, user-supplied headers and the cookie jar are stripped before the request leaves (2.0.1 — in 2.0.0 they followed the redirect). Run with `--skip` on the enrichment modules for a fully offline scan. AI analysis is opt-in and transmits nothing unless you pass `--ai` or `--ai-key`.
+**What leaves your machine.** Findings are never uploaded. Some scanners look your target up in public intelligence sources (certificate transparency via crt.sh, and vulnerability data from OSV and NVD), which necessarily discloses the domain or version being checked to those services. Credentials you pass with `--bearer`, `--auth`, `--cookie`, or `--header` are sent **only** to the target host and its subdomains, never to those third parties; this is enforced in `HTTPClient` and covered by tests. This holds across redirects too: if the target redirects to another host, user-supplied headers and the cookie jar are stripped before the request leaves (2.0.1 — in 2.0.0 they followed the redirect). One exception is worth knowing: if `HTTP_PROXY` or `HTTPS_PROXY` is set in your environment, requests go through that proxy and it sees them — cleartext for a plain-HTTP target, hostname only for HTTPS, which is CONNECT-tunnelled. That is standard `requests` behaviour and usually what you want behind a corporate proxy, but unset those variables if you would rather it not see an authenticated scan. Run with `--skip` on the enrichment modules for a fully offline scan. AI analysis is opt-in and transmits nothing unless you pass `--ai` or `--ai-key`.
 
 ---
 
@@ -59,7 +60,7 @@ $ tblue -u https://example.com -d 1 --only headers,csp,cookies,clickjacking,\
         mixed_content,dns_caa,js_secrets,hsts_preload
 
 ╭──────────────────────────────────────────────────────────────────────────────╮
-│          Passive blue-team security scanner  ·  8 modules  ·  v2.0.0         │
+│          Passive blue-team security scanner  ·  8 modules  ·  v2.0.1         │
 ├──────────────────────────────────────────────────────────────────────────────┤
 │   Target   https://example.com                                               │
 │   Output   tblue_report.html  ·  50 workers                                  │
@@ -148,6 +149,10 @@ Full reference with descriptions, CWE mappings, and remediation guidance: **[SCA
 ```bash
 pip install tblue
 ```
+
+Current release is **2.0.1**. Earlier releases are yanked — `pip install tblue`
+resolves to 2.0.1 automatically.
+
 
 **From source:**
 
@@ -463,6 +468,29 @@ Once connected, your AI has three tools:
 Pass any of these as `category` to run a focused scan:
 
 `authentication` · `authorization` · `cors` · `csp` · `cookies` · `headers` · `tls` · `oauth` · `ssrf` · `secrets` · `api` · `graphql` · `supply_chain` · `cloud` · `dns` · `injection` · `csrf`
+
+---
+
+## Project status
+
+Actively maintained. 2.0.1 is current on [PyPI](https://pypi.org/project/tblue/).
+
+The suite is 6741 tests. Five of them are properties rather than unit checks,
+because they are the claims this README makes that would matter most if they
+were false:
+
+| Property | Test |
+|---|---|
+| No default scanner sends uninvited traffic | every one of the 582 is run against an instrumented server; a POST/PUT/PATCH/DELETE or an injected payload fails the build |
+| Credentials never reach a third party | `tests/test_credential_scoping.py` |
+| Credentials never survive an off-target redirect | `tests/test_redirect_scoping.py` |
+| CI gates fail on findings, not just score | `tests/test_severity_gate.py` |
+| ATT&CK mappings are real techniques | `tests/test_mitre_catalogue.py` |
+
+Run them yourself with `pip install -e ".[dev]"` then `pytest` — about ten
+minutes. Bug reports and PRs are welcome; see [CONTRIBUTING.md](CONTRIBUTING.md).
+Security issues should go through [SECURITY.md](SECURITY.md) rather than a public
+issue.
 
 ---
 
