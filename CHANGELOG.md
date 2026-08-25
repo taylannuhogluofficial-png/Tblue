@@ -24,7 +24,7 @@ major version. Both 1.0.0 and 1.0.1 are yanked from PyPI.
 
 ### Changed (breaking)
 
-- **Default scans are now genuinely passive, and it is enforced.** 31 modules
+- **Default scans are now genuinely passive, and it is enforced.** 32 modules
   that send uninvited traffic no longer run without `--active`. The list was
   built by measurement, not by name: every scanner was run against an
   instrumented server and any that issued POST/PUT/PATCH/DELETE, or a GET
@@ -50,7 +50,7 @@ major version. Both 1.0.0 and 1.0.1 are yanked from PyPI.
   **Impact:** default runs no longer report exposed databases (MySQL,
   PostgreSQL, MongoDB, Elasticsearch, Redis, Memcached), exposed SSH/Telnet/FTP,
   GraphQL introspection, or injection findings that require sending a payload.
-  Pass `--active` to restore them. The split is 583 passive plus 31 opt-in
+  Pass `--active` to restore them. The split is 582 passive plus 32 opt-in
   active (12 probe, 20 intrusive). `tests/test_passive_by_default.py` reproduces the measurement and
   fails if a default scanner starts sending traffic.
 
@@ -99,6 +99,13 @@ major version. Both 1.0.0 and 1.0.1 are yanked from PyPI.
   checks POST to login endpoints or send XXE payloads.
 - SCANNERS.md claimed to document all 614 scanners while containing 405
   entries.
+- The demo GIF and the README's sample output were both produced by
+  `scripts/demo_sim.py`, which printed invented findings (`/.env returned 200`,
+  a reflected-XSS hit, an nginx banner) against a domain that has none of them,
+  and featured a module now gated behind `--active`. The simulator is deleted;
+  `demo.tape` now records a real scan and the README block is real output.
+- `pyproject.toml` declared `py.typed` as package data but the file did not
+  exist, so no wheel ever shipped it. Added.
 
 ## [1.0.1] — 2026-08-24
 

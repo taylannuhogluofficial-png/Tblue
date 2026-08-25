@@ -1,21 +1,10 @@
-> ## ⚠️ If you ran 1.0.0 or 1.0.1, rotate your credentials
+> ### ⚠️ If you ran 1.0.0 or 1.0.1, rotate your credentials
 >
-> An external review found real problems in those releases. Both are yanked
-> from PyPI and **2.0.0 fixes all of them**, but one needs action from you:
->
-> - **Authenticated scans leaked credentials.** Values passed with `--cookie`,
->   `--header`, `--bearer` or `--auth` were attached to a shared HTTP session
->   that also contacted third-party lookup services (crt.sh, OSV, NVD,
->   AlienVault OTX), so those services received them. If you ran an
->   authenticated scan on 1.0.0 or 1.0.1, **rotate those credentials.** Sorry.
-> - **The default scan was not passive.** It port-scanned, submitted logins and
->   password resets, and sent XXE and traversal payloads. In 2.0.0 the default
->   is measured read-only and enforced by a test; everything that sends
->   uninvited traffic now sits behind `--probe` or `--active`.
-> - **Generated PoC commands were not shell-quoted**, so copying one from a
->   report of a hostile target could execute shell metacharacters.
->
-> Full detail is in the [changelog](CHANGELOG.md). Issues and PRs welcome.
+> Those releases attached `--cookie` / `--header` / `--bearer` / `--auth` values to a
+> shared HTTP session that also reached third-party lookup services, so those services
+> received them. Both are yanked. **If you ran an authenticated scan on either, rotate
+> those credentials.** 2.0.0 scopes credentials to the target host — see the
+> [changelog](CHANGELOG.md) for the full list of fixes.
 
 <div align="center">
 
@@ -35,13 +24,13 @@
 [![Scanners](https://img.shields.io/badge/scanners-614-cyan?style=flat-square)](#what-it-checks)
 [![MCP Ready](https://img.shields.io/badge/MCP-ready-purple?style=flat-square)](#use-as-an-ai-plugin-mcp)
 [![PyPI](https://img.shields.io/pypi/v/tblue?style=flat-square&color=blue)](https://pypi.org/project/tblue/)
-[![Tests](https://img.shields.io/badge/tests-6720%20passing-brightgreen?style=flat-square)](#)
+[![Tests](https://img.shields.io/badge/tests-6730%20passing-brightgreen?style=flat-square)](#)
 
 </div>
 
 ---
 
-Tblue is a free, open-source security scanner for website owners. You point it at your site and it tells you what looks wrong — no security background required. It runs completely on your machine, sends no data to third parties, and requires no account or API key.
+Tblue is a free, open-source security scanner for website owners. You point it at your site and it tells you what looks wrong — no security background required. It runs on your machine, requires no account or API key, and never uploads your findings. A few scanners do look your target up in public intelligence sources — see **What leaves your machine** below.
 
 **It is blue-team only.** The 582 default scanners read HTTP responses, headers, cookies, JavaScript files, and page content. Nothing is modified and no credentials are ever brute-forced against your application.
 
@@ -57,7 +46,7 @@ Scanners are split by what they actually send, measured rather than assumed:
 
 `--active` implies `--probe`. The intrusive tier can lock accounts out, send password-reset emails to real people, create records, and trip WAFs — only use it on systems you own.
 
-**What leaves your machine.** Findings are never uploaded. Some scanners look your target up in public intelligence sources (certificate transparency via crt.sh, and vulnerability data from OSV and NVD), which necessarily discloses the domain or version being checked to those services. Credentials you pass with `--bearer`, `--auth`, `--cookie`, or `--header` are sent **only** to the target host and its subdomains, never to those third parties; this is enforced in `HTTPClient` and covered by tests. Run with `--skip` on the enrichment modules for a fully offline scan. AI analysis is opt-in and transmits nothing unless you pass `--ai` or `--ai-key`.
+**What leaves your machine.** Findings are never uploaded. Some scanners look your target up in public intelligence sources (certificate transparency via crt.sh, and vulnerability data from OSV and NVD), which necessarily discloses the domain or version being checked to those services. Credentials you pass with `--bearer`, `--auth`, `--cookie`, or `--header` are sent **only** to the target host and its subdomains, never to those third parties; this is enforced in `HTTPClient` and covered by tests. One gap remains: if the target itself redirects to another host, a value passed with `--header` follows the redirect (`--bearer` and `--auth` are stripped by `requests`). Avoid `--header` on targets you do not control — tracked for 2.0.1. Run with `--skip` on the enrichment modules for a fully offline scan. AI analysis is opt-in and transmits nothing unless you pass `--ai` or `--ai-key`.
 
 ---
 
@@ -66,29 +55,47 @@ Scanners are split by what they actually send, measured rather than assumed:
 ![Tblue terminal demo](demo.gif)
 
 ```
-$ tblue -u https://example.com
+$ tblue -u https://example.com -d 1 --only headers,csp,cookies,clickjacking,\
+        mixed_content,dns_caa,js_secrets,hsts_preload
 
-  Scanning https://example.com — 582 passive modules · 50 workers · depth 3
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+╭──────────────────────────────────────────────────────────────────────────────╮
+│          Passive blue-team security scanner  ·  8 modules  ·  v2.0.0         │
+├──────────────────────────────────────────────────────────────────────────────┤
+│   Target   https://example.com                                               │
+│   Output   tblue_report.html  ·  50 workers                                  │
+╰──────────────────────────────────────────────────────────────────────────────╯
 
-  [FAIL] hsts_missing          HSTS not set — site reachable over plain HTTP
-  [FAIL] csp_missing           Content-Security-Policy absent — no XSS defence
-  [FAIL] x_frame_options       X-Frame-Options missing — clickjacking possible
-  [FAIL] mixed_content         Page loads HTTP resources over HTTPS
-  [WARN] cors_wildcard         CORS wildcard on /api — any origin can read responses
-  [WARN] spf_softfail          SPF uses ~all (softfail) — upgrade to -all
-  [WARN] dmarc_none            DMARC p=none — domain can be spoofed in phishing
-  [WARN] cookie_samesite       Session cookie missing SameSite attribute
-  [INFO] server_banner         Server: nginx/1.24.0 — version fingerprint exposed
-  [PASS] tls_version           TLS 1.3 · certificate valid · no weak ciphers
-  [PASS] js_secrets            No API keys or secrets found in JavaScript bundles
-  [PASS] cookie_secure         Cookies — HttpOnly and Secure flags set correctly
-  [PASS] dnssec                DNSSEC signed and validated
+[INFO]  ►  Checking security headers...
+[FAIL]  ❌ Missing header: Content-Security-Policy
+[FAIL]  ❌ Missing header: Strict-Transport-Security
+[FAIL]  ❌ Missing header: X-Frame-Options
+[WARN]  ⚠️  Missing header: Referrer-Policy
+[INFO]  ►  Header grade for https://example.com/: F
+[FAIL]  ❌ Clickjacking: no framing protection on https://example.com
+[INFO]  ✅ No hardcoded secrets detected in JavaScript
+[INFO]  ✅ No mixed content found on https://example.com
+[WARN]  ⚠️  DNS CAA — no CAA records found for example.com
+                                                          … 8 modules, 3.7s
 
-  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-  Grade: D  ·  Score: 41/100  ·  4 FAIL · 4 WARN · 1 INFO · 4 PASS
-  Report saved: example_com_20260816_143201.html
+╭──────────────────────────────────────────────────────────────────────────────╮
+│    B   Security Score  72/100   ██████████████░░░░░░                         │
+├──────────────────────────────────────────────────────────────────────────────┤
+│   ● 🔴 Critical    0                                                          │
+│   ● 🟠 High        2  −20 pts                                                 │
+│   ● 🟡 Medium      1  −5 pts                                                  │
+│   ● 🔵 Low         3  −3 pts                                                  │
+├──────────────────────────────────────────────────────────────────────────────┤
+│   Top issues to fix:                                                         │
+│   1. ● [FAIL] Security headers          https://example.com/                 │
+│   2. ● [FAIL] CSP — missing             https://example.com                  │
+│   3. ● [FAIL] Clickjacking — no framing protection                           │
+╰──────────────────────────────────────────────────────────────────────────────╯
+
+[INFO]  HTML report saved: tblue_report.html
 ```
+
+*Real output, lightly trimmed. `demo.tape` records the GIF above from the same
+command — drop `--only` to run all 582 passive modules.*
 
 ---
 
