@@ -25,7 +25,7 @@
 [![Scanners](https://img.shields.io/badge/scanners-614-cyan?style=flat-square)](#what-it-checks)
 [![MCP Ready](https://img.shields.io/badge/MCP-ready-purple?style=flat-square)](#use-as-an-ai-plugin-mcp)
 [![PyPI](https://img.shields.io/pypi/v/tblue?style=flat-square&color=blue)](https://pypi.org/project/tblue/)
-[![Tests](https://img.shields.io/badge/tests-6741%20passing-brightgreen?style=flat-square)](#)
+[![CI](https://github.com/taylannuhogluofficial-png/Tblue/actions/workflows/ci.yml/badge.svg)](https://github.com/taylannuhogluofficial-png/Tblue/actions/workflows/ci.yml)
 
 </div>
 
