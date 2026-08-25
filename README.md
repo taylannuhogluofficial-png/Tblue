@@ -1,5 +1,21 @@
-<h1> In Maintenance</h1> 
-<div align="center">
+> ## 🔧 In maintenance — a quick heads-up before you scan
+>
+> Thanks for checking out Tblue! An external review turned up some real issues,
+> and I'd rather be upfront about them than stay quiet while I fix things.
+>
+> Parts of this README promise more than the code currently delivers. I'm
+> rewriting both to match. Until that lands:
+>
+> - **Please skip `--cookie`, `--header`, `--bearer` and `--auth` for now.**
+>   Those values currently get passed along to third-party lookup services.
+>   If you've already run an authenticated scan on 1.0.0 or 1.0.1, please
+>   rotate those credentials — sorry about that one.
+> - **The default scan does more probing than the docs suggest.** Point it at
+>   a staging site rather than production for now.
+> - **The PyPI releases are yanked on purpose** — not a mistake, just keeping
+>   the broken build out of people's hands until the fix ships.
+>
+> Fixes are in progress. Issues and PRs very welcome if you spot anything else.<div align="center">
 
 ```
 ████████╗ ██████╗  ██╗      ██╗   ██╗ ███████╗
